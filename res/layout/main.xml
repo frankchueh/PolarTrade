@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/btnUserInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Userinfo" />
+
+    <Button
+        android:id="@+id/btnChatroomList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ChatroomList" />
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="103dp"
+        android:layout_height="wrap_content"
+        android:text="Product" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="99dp"
+        android:layout_height="wrap_content"
+        android:text="Search" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Shopping cart" />
+
+    <Button
+        android:id="@+id/btnProductUpload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Product upload" />
+
+    <Button
+        android:id="@+id/btnStartService"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start service" />
+
+    <Button
+        android:id="@+id/btnQuitService"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="quit service" />
+
+    <Button
+        android:id="@+id/btnProductManage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ProductManage" />
+
+</LinearLayout>
