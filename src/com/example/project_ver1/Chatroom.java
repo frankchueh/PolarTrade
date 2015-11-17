@@ -82,6 +82,7 @@ public class Chatroom extends Activity {
 			String msg = "GetChatRoom\n" + PID + "\n" + SID + "\n" + BID;
 			new SendToServer(Login.address, Login.port1, msg, MessageHandler, SendToServer.GET_CHAT_ROOM);
 		}
+
 		
 		
 	}

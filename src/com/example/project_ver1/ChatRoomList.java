@@ -138,8 +138,8 @@ public class ChatRoomList extends Activity {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			// TODO Auto-generated method stub
 			convertView = myInflater.inflate(R.layout.chatlistview, null);
-			ImageView imgChatList = (ImageView) convertView
-					.findViewById(R.id.imgChatList);
+//			ImageView imgChatList = (ImageView) convertView
+//					.findViewById(R.id.imgChatList);
 			TextView txtChatList1 = (TextView) convertView
 					.findViewById(R.id.txtChatList1);
 
