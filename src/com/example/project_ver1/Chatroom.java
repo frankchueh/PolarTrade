@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -21,7 +22,9 @@ public class Chatroom extends Activity {
 	Handler MessageHandler;
 	HandlerThread GetHandler;
 	Handler workHandler;
-	int DownloadTime = 5000;
+	int DownloadTime = 10000;
+	
+	boolean newOpen = true; //讓OnResume知道是否為重新開啟
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +39,19 @@ public class Chatroom extends Activity {
 		GetHandler = new HandlerThread("getmsg");
 		GetHandler.start();
 		workHandler = new Handler(GetHandler.getLooper());
-		workHandler.postDelayed(DownloadMsg, DownloadTime);
+		
+		btnChatSend.setOnClickListener(new Button.OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				String sendMsg = editChatMsg.getText().toString();
+				editChatMsg.setText("");	//清空輸入框
+				
+				String command = "UpdateMessage\n" + chatID + "\n" + mainActivity.Account + "\n" + sendMsg;
+				new SendToServer(Login.address, Login.port1, command, 
+						MessageHandler, SendToServer.GET_CHAT_ROOM).start();
+			}});
 		
 		MessageHandler = new Handler(){
 			@Override
@@ -47,8 +62,7 @@ public class Chatroom extends Activity {
 				{
 				case SendToServer.GET_CHAT_ROOM:
 					chatID = Integer.parseInt(msg.obj.toString());
-					new SendToServer(Login.address, Login.port1, "DownloadMessage\n"+chatID
-							, MessageHandler, SendToServer.DOWNLOAD_MESSAGE);
+					workHandler.postDelayed(DownloadMsg, DownloadTime);
 					break;
 				case SendToServer.DOWNLOAD_MESSAGE:
 					txtChatData.setText(msg.obj.toString());
@@ -76,9 +90,9 @@ public class Chatroom extends Activity {
 			int BID = call_it.getIntExtra("buyerID", -1);
 			int SID = call_it.getIntExtra("sellerID", -1);
 			String msg = "GetChatRoom\n" + PID + "\n" + SID + "\n" + BID;
-			new SendToServer(Login.address, Login.port1, msg, MessageHandler, SendToServer.GET_CHAT_ROOM);
+			new SendToServer(Login.address, Login.port1, msg, MessageHandler, SendToServer.GET_CHAT_ROOM).start();
 		}
-		
+
 	}
 	
 	//下載訊息
@@ -87,12 +101,39 @@ public class Chatroom extends Activity {
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			String command = "DownloadMessage";
-			new SendToServer(Login.address, Login.port1, command, MessageHandler, SendToServer.DOWNLOAD_MESSAGE);
+			String command = "DownloadMessage\n" + chatID + "\n" + mainActivity.Account;
+			new SendToServer(Login.address, Login.port1, command, MessageHandler, SendToServer.DOWNLOAD_MESSAGE).start();
 			workHandler.postDelayed(DownloadMsg, DownloadTime);	//持續跑下去
 		}
 			
 	};
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		workHandler.postDelayed(DownloadMsg, DownloadTime);
+		Toast.makeText(getApplicationContext(), "OnResume", Toast.LENGTH_SHORT).show();
+		
+	}
+
+	
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		workHandler.removeCallbacks(DownloadMsg);
+		workHandler = null;
+		super.onDestroy();
+		Toast.makeText(getApplicationContext(), "OnDestory", Toast.LENGTH_SHORT).show();
+	}
+	
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		workHandler.removeCallbacks(DownloadMsg);
+		super.onPause();
+		Toast.makeText(getApplicationContext(), "OnPause", Toast.LENGTH_SHORT).show();
+	}
 		
 }
 

@@ -262,7 +262,17 @@ public class SendToServer extends Thread {
 				break;
 
 			case UPDATE_MESSAGE:
-
+				pw.println(msg.toString()+"----MESSAGE----END----");
+	
+				if(br.readLine().equals("success"))
+				{
+					return_msg.what = UPDATE_MESSAGE;
+				}
+				else
+				{
+					return_msg.what = FAIL;
+					return_msg.obj = "send message fail";
+				}
 				break;
 
 			case GET_CHAT_ROOM:
