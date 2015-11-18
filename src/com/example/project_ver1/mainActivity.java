@@ -23,9 +23,8 @@ public class mainActivity extends Activity{
 		btnStartService = (Button) this.findViewById(R.id.btnStartService);
 		btnQuitService = (Button) this.findViewById(R.id.btnQuitService);
 		btnProductManage = (Button) this.findViewById(R.id.btnProductManage);
-		//Intent con = getIntent();
-		//Account = con.getStringExtra("Account");
-		Account = "steven0824";
+		Intent con = getIntent();
+		Account = con.getStringExtra("Account");
 		
 		// Start location upload service
 		/*Intent intent = new Intent(GetPosition.START_UPLOAD);

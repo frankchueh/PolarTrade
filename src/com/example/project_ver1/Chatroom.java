@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Message;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,19 +19,24 @@ public class Chatroom extends Activity {
 	TextView txtChatData;
 	int chatID=-1;
 	Handler MessageHandler;
+	HandlerThread GetHandler;
+	Handler workHandler;
+	int DownloadTime = 5000;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.chatroom);
-		Intent call_it = getIntent();
 		
 		btnChatSend = (Button) this.findViewById(R.id.btnChatSend);
 		editChatMsg = (EditText) this.findViewById(R.id.editChatMsg);
 		txtChatData = (TextView) this.findViewById(R.id.txtChatData);
 		
-		
+		GetHandler = new HandlerThread("getmsg");
+		GetHandler.start();
+		workHandler = new Handler(GetHandler.getLooper());
+		workHandler.postDelayed(DownloadMsg, DownloadTime);
 		
 		MessageHandler = new Handler(){
 			@Override
@@ -60,6 +66,7 @@ public class Chatroom extends Activity {
 			}
 		};
 		
+		Intent call_it = getIntent();
 		//先抓看有沒有chatID
 		chatID = call_it.getIntExtra("chatID",-1);
 		//如果沒有chatID
@@ -72,8 +79,20 @@ public class Chatroom extends Activity {
 			new SendToServer(Login.address, Login.port1, msg, MessageHandler, SendToServer.GET_CHAT_ROOM);
 		}
 		
-		
 	}
 	
+	//下載訊息
+	Runnable DownloadMsg = new Runnable()
+	{
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			String command = "DownloadMessage";
+			new SendToServer(Login.address, Login.port1, command, MessageHandler, SendToServer.DOWNLOAD_MESSAGE);
+			workHandler.postDelayed(DownloadMsg, DownloadTime);	//持續跑下去
+		}
+			
+	};
+		
 }
 

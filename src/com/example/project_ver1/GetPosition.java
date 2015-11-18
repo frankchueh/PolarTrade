@@ -35,9 +35,10 @@ public class GetPosition extends Service implements ConnectionCallbacks,
 	// 上傳座標字串
 	private String uploadString;
 	// Server address
-	public String address = "140.118.125.229";
+
+//	public String address = "140.118.125.229";
 	// 連接 Port
-	public int port = 3838;
+//	public int port = 3838;
 	// 使用者 ID
     String user_Account = "";
 	// message handler
@@ -121,7 +122,8 @@ public class GetPosition extends Service implements ConnectionCallbacks,
 			 		  user_Account + "\n" + 
 			 		  updateLocation.getLatitude() + "\n" + 
 			 		  updateLocation.getLongitude();
-			new SendToServer(address,port,uploadString,MessageHandler,SendToServer.UPLOAD_LOCATE).start();
+			new SendToServer(Login.address, Login.port1, uploadString,
+					MessageHandler, SendToServer.UPLOAD_LOCATE).start();
 		}
 		
 	}
