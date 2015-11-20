@@ -273,7 +273,7 @@ public class SendToServer extends Thread {
 				break;
 
 			case UPDATE_MESSAGE:
-				pw.println(msg.toString()+"----MESSAGE----END----");
+				pw.println(msg.toString()+"\n----MESSAGE----END----");
 	
 				if(br.readLine().equals("success"))
 				{
