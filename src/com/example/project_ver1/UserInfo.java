@@ -25,7 +25,6 @@ import android.widget.Toast;
 public class UserInfo extends Activity {
 
 	Handler MessageHandler;
-
 	Button btnUserinfoEdit, btnUserinfoBack;
 	TextView txtUserinfo;
 	ImageView imgUserinfoPhoto;
@@ -72,7 +71,7 @@ public class UserInfo extends Activity {
 					txtUserinfo.setText(msg.obj.toString());
 					photoPath = msg.obj.toString().split("\n")[2]; // 2為photopath的位置
 					String msg_getphoto = "GetPhoto\n" + photoPath;
-					new SendToServer(SendToServer.MessagePort, msg_getphoto,
+					new SendToServer(SendToServer.PhotoPort, msg_getphoto,
 							MessageHandler, SendToServer.GET_PHOTO).start(); // 傳到server並抓取圖片
 					break;
 				case SendToServer.SUCCESS_GET_PHOTO:

@@ -18,7 +18,7 @@ public class SendToServer extends Thread {
 	public static int PhotoPort = 3839;
 	
 	public static final int LOGIN = 1001, SIGNUP = 1002, GET_USER_INFO = 1003,
-			UPDATE_USER_INFO = 1004, UPDATE_USER_PHOTO = 1005,
+			UPDATE_USER_INFO = 1004, UPLOAD_USER_PHOTO = 1005,
 			GET_PHOTO = 1006, UPLOAD_LOCATE = 1007, UPLOAD_PRODUCT = 1008,
 			UPLOAD_PRODUCT_PHOTO = 1009, GET_USER_PRODUCT = 1010,
 			GET_PRODUCT_INFO = 1011, LIST_CHAT_ROOM = 1012,
@@ -26,9 +26,9 @@ public class SendToServer extends Thread {
 			UPDATE_MESSAGE = 1015, SUCCESS = 2001, FAIL = 2002,
 			SERVER_ERROR = 2003, SUCCESS_GET_PHOTO = 2004,
 			SUCCESS_GET_USERINFO = 2005, SUCCESS_GET_CHAT_LIST = 2006,
-			SUCCESS_GET_PID = 2007, SUCCESS_GET_PRODUCTINFO = 2008;
-
-	String address = "192.168.0.102"; // Server的address
+			SUCCESS_GET_PID = 2007, SUCCESS_GET_PRODUCTINFO = 2008,
+			SUCCESS_UPLOAD_PHOTO = 2009;
+	String address = "192.168.1.112"; // Server的address
 	int Port; // server監聽的port
 	Socket client;
 	InetSocketAddress isa;
@@ -130,11 +130,15 @@ public class SendToServer extends Thread {
 				break;
 			
 			case SIGNUP:
-				
+				pw.println(msg.toString());
+				if (br.readLine().equals("success")) {
+					return_msg.what = SUCCESS;
+				} else
+					return_msg.what = FAIL;
 				break;
 			
-			case UPDATE_USER_PHOTO:
-				pw.println("UpdateUserPhoto");
+			case UPLOAD_USER_PHOTO:
+				pw.println("UploadUserPhoto");
 				pw.println(mainActivity.Account);
 				if (br.readLine().equals("OK")) {
 					ObjectOutputStream oos = new ObjectOutputStream(
@@ -143,7 +147,7 @@ public class SendToServer extends Thread {
 					oos.flush();
 
 					if (br.readLine().equals("success")) {
-						return_msg.what = SUCCESS;
+						return_msg.what = SUCCESS_UPLOAD_PHOTO;
 					} else
 						return_msg.what = FAIL;
 

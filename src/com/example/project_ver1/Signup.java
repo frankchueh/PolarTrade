@@ -43,7 +43,7 @@ public class Signup extends Activity {
 	ImageView imgSignPhoto;
 	Handler MessageHandler;
 	
-	
+	String Account;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -93,14 +93,20 @@ public class Signup extends Activity {
 
 			public void handleMessage(Message msg) {
 				switch (msg.what) {
-				case 0:
+				case SendToServer.SUCCESS:
 					Toast.makeText(getApplicationContext(), "Sign up success", Toast.LENGTH_SHORT).show();
-					finish();
+					mainActivity.Account = Account;
+					new SendToServer(SendToServer.PhotoPort, mContent, MessageHandler, SendToServer.UPLOAD_USER_PHOTO).start();
 					break;
-				case 1:
+				case SendToServer.FAIL:
 					Toast.makeText(getApplicationContext(), "帳戶已經存在", Toast.LENGTH_SHORT).show();
 					break;
-				case 2:
+				
+				case SendToServer.SUCCESS_UPLOAD_PHOTO:
+					Toast.makeText(getApplicationContext(), "Upload Photo Success!", Toast.LENGTH_SHORT).show();
+					finish();
+					break;
+				case SendToServer.SERVER_ERROR:
 					Toast.makeText(getApplicationContext(), "Server not response", Toast.LENGTH_SHORT).show();
 					break;
 				}
@@ -121,7 +127,7 @@ public class Signup extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				String Account, Password, PasswordConfirm, Username;
+				String Password, PasswordConfirm, Username;
 				if (!editSignAccount.getText().toString().equals("")) {		//檢查Account
 					Account = editSignAccount.getText().toString();
 					if (!CheckInput(Account)) {
@@ -177,6 +183,7 @@ public class Signup extends Activity {
 						+ Password +"\n"
 						+ Username;
 				new SendToServer(SendToServer.MessagePort, msg, MessageHandler, SendToServer.SIGNUP).start();
+				
 				
 			}
 		});
