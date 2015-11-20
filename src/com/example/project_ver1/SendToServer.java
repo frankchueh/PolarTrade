@@ -13,7 +13,10 @@ import android.os.Handler;
 import android.os.Message;
 
 public class SendToServer extends Thread {
-
+	
+	public static int MessagePort = 3838;
+	public static int PhotoPort = 3839;
+	
 	public static final int LOGIN = 1001, SIGNUP = 1002, GET_USER_INFO = 1003,
 			UPDATE_USER_INFO = 1004, UPDATE_USER_PHOTO = 1005,
 			GET_PHOTO = 1006, UPLOAD_LOCATE = 1007, UPLOAD_PRODUCT = 1008,
@@ -25,7 +28,7 @@ public class SendToServer extends Thread {
 			SUCCESS_GET_USERINFO = 2005, SUCCESS_GET_CHAT_LIST = 2006,
 			SUCCESS_GET_PID = 2007, SUCCESS_GET_PRODUCTINFO = 2008;
 
-	String address; // Server的address
+	String address = "192.168.0.102"; // Server的address
 	int Port; // server監聽的port
 	Socket client;
 	InetSocketAddress isa;
@@ -36,9 +39,9 @@ public class SendToServer extends Thread {
 	int command;
 	Message return_msg = new Message();
 
-	SendToServer(String address, int Port, Object message,
+	SendToServer(int Port, Object message,
 			Handler MessageHandler, int command) {
-		this.address = address;
+//		this.address = address;
 		this.Port = Port;
 		this.msg = message;
 		this.MessageHandler = MessageHandler;
@@ -125,7 +128,11 @@ public class SendToServer extends Thread {
 				} else
 					return_msg.what = FAIL;
 				break;
-
+			
+			case SIGNUP:
+				
+				break;
+			
 			case UPDATE_USER_PHOTO:
 				pw.println("UpdateUserPhoto");
 				pw.println(mainActivity.Account);

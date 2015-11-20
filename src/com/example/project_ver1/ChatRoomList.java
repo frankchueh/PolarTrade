@@ -103,7 +103,7 @@ public class ChatRoomList extends Activity {
 		});
 
 		String msg = "ListChatRoom\n" + mainActivity.Account;
-		new SendToServer(Login.address, 3838, msg, MessageHandler,
+		new SendToServer(SendToServer.MessagePort, msg, MessageHandler,
 				SendToServer.LIST_CHAT_ROOM).start();
 
 	}

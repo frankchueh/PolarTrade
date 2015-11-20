@@ -87,7 +87,27 @@ public class Signup extends Activity {
 				dlg.show();
 			}
 		});
+		
+		
+		 MessageHandler = new Handler() {
 
+			public void handleMessage(Message msg) {
+				switch (msg.what) {
+				case 0:
+					Toast.makeText(getApplicationContext(), "Sign up success", Toast.LENGTH_SHORT).show();
+					finish();
+					break;
+				case 1:
+					Toast.makeText(getApplicationContext(), "帳戶已經存在", Toast.LENGTH_SHORT).show();
+					break;
+				case 2:
+					Toast.makeText(getApplicationContext(), "Server not response", Toast.LENGTH_SHORT).show();
+					break;
+				}
+				super.handleMessage(msg);
+			}
+		};
+		
 		btnSignDelete.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -156,29 +176,12 @@ public class Signup extends Activity {
 				msg += "SignUp\n" + Account + "\n"
 						+ Password +"\n"
 						+ Username;
-				new SendThread(Login.address, 3838, msg).start();
+				new SendToServer(SendToServer.MessagePort, msg, MessageHandler, SendToServer.SIGNUP).start();
 				
 			}
 		});
 		
-		 MessageHandler = new Handler() {
 
-			public void handleMessage(Message msg) {
-				switch (msg.what) {
-				case 0:
-					Toast.makeText(getApplicationContext(), "Sign up success", Toast.LENGTH_SHORT).show();
-					finish();
-					break;
-				case 1:
-					Toast.makeText(getApplicationContext(), "帳戶已經存在", Toast.LENGTH_SHORT).show();
-					break;
-				case 2:
-					Toast.makeText(getApplicationContext(), "Server not response", Toast.LENGTH_SHORT).show();
-					break;
-				}
-				super.handleMessage(msg);
-			}
-		};
 		
 	}
 	
@@ -322,77 +325,6 @@ public class Signup extends Activity {
 	}
 	
 	
-	class SendThread extends Thread {
-		String address;
-		int Port;
-		Socket client;
-		InetSocketAddress isa;
-		String msg;
-		PrintWriter pw;
-		BufferedReader br;
-		SendThread(String address, int Port, String message) {
-			this.address = address;
-			this.Port = Port;
-			this.msg = message;
-
-		}
-
-		public void run() {
-			try {
-				isa = new InetSocketAddress(address, Port);
-				client = new Socket();
-				client.connect(isa, 10000);
-
-				pw = new PrintWriter(new OutputStreamWriter(
-						client.getOutputStream(), "utf-8"),true);
-				br = new BufferedReader(new InputStreamReader(
-						client.getInputStream()));
-				
-				pw.println(msg);
-				ObjectOutputStream oos = new ObjectOutputStream(client.getOutputStream());	//把照片寫入
-				oos.writeObject(mContent);
-				oos.flush();
-		
-					String rs;
-					if((rs=br.readLine())!=null)
-					{
-						System.out.println(rs);
-					}
-					
-					
-					pw.close();			//要等到read完成才能close,不然會產生錯誤
-					oos.close();
-					client.close();
-					client = null;
-				if(rs.equals("success"))
-				{
-					Message msg = new Message();
-					msg.what=0;
-					MessageHandler.sendMessage(msg);
-				}
-				else
-				{
-					Message msg = new Message();
-					msg.what=1;
-					MessageHandler.sendMessage(msg);
-				}
-				
-
-				System.out.println("Pass over!");
-			} catch (java.io.IOException e) {
-				Message msg = new Message();
-				msg.what=2;
-				MessageHandler.sendMessage(msg);
-				System.out.println("socket error");
-				System.out.println("IOException :" + e.toString());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-
-		}
-
-	}
 	
 
 }

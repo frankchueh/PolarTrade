@@ -49,7 +49,7 @@ public class Chatroom extends Activity {
 				editChatMsg.setText("");	//清空輸入框
 				
 				String command = "UpdateMessage\n" + chatID + "\n" + mainActivity.Account + "\n" + sendMsg;
-				new SendToServer(Login.address, Login.port1, command, 
+				new SendToServer( SendToServer.MessagePort, command, 
 						MessageHandler, SendToServer.GET_CHAT_ROOM).start();
 			}});
 		
@@ -90,7 +90,7 @@ public class Chatroom extends Activity {
 			int BID = call_it.getIntExtra("buyerID", -1);
 			int SID = call_it.getIntExtra("sellerID", -1);
 			String msg = "GetChatRoom\n" + PID + "\n" + SID + "\n" + BID;
-			new SendToServer(Login.address, Login.port1, msg, MessageHandler, SendToServer.GET_CHAT_ROOM).start();
+			new SendToServer(SendToServer.MessagePort, msg, MessageHandler, SendToServer.GET_CHAT_ROOM).start();
 		}
 
 	}
@@ -102,7 +102,7 @@ public class Chatroom extends Activity {
 		public void run() {
 			// TODO Auto-generated method stub
 			String command = "DownloadMessage\n" + chatID + "\n" + mainActivity.Account;
-			new SendToServer(Login.address, Login.port1, command, MessageHandler, SendToServer.DOWNLOAD_MESSAGE).start();
+			new SendToServer(SendToServer.MessagePort, command, MessageHandler, SendToServer.DOWNLOAD_MESSAGE).start();
 			workHandler.postDelayed(DownloadMsg, DownloadTime);	//持續跑下去
 		}
 			

@@ -59,7 +59,6 @@ public class OnShelf extends Activity {
 	private byte[] mContent = null;  // 用於儲存商品照片資料 (byte) -> 用於傳輸
 	// MessageHandler 宣告
 	Handler MessageHandler;
-	public static  String address = "140.118.125.229"; 
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -143,8 +142,8 @@ public class OnShelf extends Activity {
 				
 				String [] msg_set = { msg , info_msg };  // 包含 ( productName + productPrice ) + (productInfo)
 				
-			    new SendToServer(address,3838,msg_set,MessageHandler,SendToServer.UPLOAD_PRODUCT).start();
-			    new SendToServer(address,3838,mContent,MessageHandler,SendToServer.UPLOAD_PRODUCT_PHOTO).start();
+			    new SendToServer(SendToServer.MessagePort ,msg_set,MessageHandler,SendToServer.UPLOAD_PRODUCT).start();
+			    new SendToServer(SendToServer.MessagePort ,mContent,MessageHandler,SendToServer.UPLOAD_PRODUCT_PHOTO).start();
 			    
 				Toast.makeText(getApplicationContext(),"done upload",
 						Toast.LENGTH_LONG).show();

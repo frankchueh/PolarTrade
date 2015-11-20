@@ -31,8 +31,6 @@ public class ProductManage extends Activity {
 	int p_allinfo_count = 0;   // 用來儲存商品所有資訊的 index
 	int p_photo_count = 0;   // 用來儲存商品照片的 index
 	
-	public static  String address = "140.118.125.229";
-	public static int port = 3838;
 	Handler MessageHandler;
 	
 	@Override
@@ -74,7 +72,8 @@ public class ProductManage extends Activity {
 		};
 		// 送出商品下載 thread
 		p_msg = "getUserProduct" + "\n" + mainActivity.Account;
-		new SendToServer(address,port,p_msg,MessageHandler,SendToServer.GET_USER_PRODUCT).start();	
+		new SendToServer(SendToServer.MessagePort, p_msg, MessageHandler, 
+				SendToServer.GET_USER_PRODUCT).start();	
 	}
 	
 	protected void getAllProductsInfo(String [] str) {
@@ -90,7 +89,7 @@ public class ProductManage extends Activity {
 		for(int i = 0; i < p_num; i++) {
 			pid_set[i] = Integer.parseInt(str[i]);   // 將所有 pid 存起來
 			p_msg = "getProductInfo" + "\n" + str[i];
-			new SendToServer(address,port,p_msg,MessageHandler,SendToServer.GET_PRODUCT_INFO).start();
+			new SendToServer(SendToServer.MessagePort ,p_msg,MessageHandler, SendToServer.GET_PRODUCT_INFO).start();
 		}
 	}
 	
@@ -101,7 +100,8 @@ public class ProductManage extends Activity {
 		pPhotoPath_set[p_allinfo_count] = str[2];
 		pInfoPath_set[p_allinfo_count] = str[3];
 		p_msg = "GetPhoto" + "\n" + pPhotoPath_set[p_allinfo_count++];  // 去取得其圖片
-		new SendToServer(address,port,p_msg,MessageHandler,SendToServer.GET_PHOTO).start();
+		new SendToServer(SendToServer.MessagePort, p_msg, MessageHandler,
+						SendToServer.GET_PHOTO).start();
 	}
 	
 	protected void saveAllProductMessage() {   // 儲存所有商品相關訊息

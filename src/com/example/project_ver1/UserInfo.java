@@ -72,7 +72,7 @@ public class UserInfo extends Activity {
 					txtUserinfo.setText(msg.obj.toString());
 					photoPath = msg.obj.toString().split("\n")[2]; // 2為photopath的位置
 					String msg_getphoto = "GetPhoto\n" + photoPath;
-					new SendToServer(Login.address, Login.port1, msg_getphoto,
+					new SendToServer(SendToServer.MessagePort, msg_getphoto,
 							MessageHandler, SendToServer.GET_PHOTO).start(); // 傳到server並抓取圖片
 					break;
 				case SendToServer.SUCCESS_GET_PHOTO:
@@ -99,7 +99,7 @@ public class UserInfo extends Activity {
 
 	public void getUserInfo(String account) {
 		String msg = "GetUserInfo" + "\n" + account;
-		new SendToServer(Login.address, 3838, msg, MessageHandler,
+		new SendToServer(SendToServer.MessagePort, msg, MessageHandler,
 				SendToServer.GET_USER_INFO).start();
 	}
 

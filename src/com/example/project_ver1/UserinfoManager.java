@@ -120,12 +120,12 @@ public class UserinfoManager extends Activity {
 				String msg = "UpdateUserInfo\n" + mainActivity.Account + "\n"
 						+ username + "\n" + age + "\n" + birth + "\n" + sex
 						+ "\n" + phone + "\n" + email;
-				new SendToServer(Login.address, 3838, msg, MessageHandler,
+				new SendToServer(SendToServer.MessagePort, msg, MessageHandler,
 						SendToServer.UPDATE_USER_INFO).start();
 				
 				if(mPhoto!=null)
 				{
-					new SendToServer(Login.address, 3838, mPhoto, MessageHandler,
+					new SendToServer(SendToServer.MessagePort, mPhoto, MessageHandler,
 							SendToServer.UPDATE_USER_PHOTO).start();
 				}
 
@@ -200,7 +200,7 @@ public class UserinfoManager extends Activity {
 					photoPath = info[2];
 					if (!photoPath.equals("null")) {
 						String msg_getphoto = "GetPhoto\n" + photoPath;
-						new SendToServer(Login.address, 3838, msg_getphoto,
+						new SendToServer(SendToServer.MessagePort, msg_getphoto,
 								MessageHandler, SendToServer.GET_PHOTO).start();
 					}
 					break;
@@ -255,7 +255,7 @@ public class UserinfoManager extends Activity {
 				});
 
 		String msg = "GetUserInfo" + "\n" + mainActivity.Account;
-		new SendToServer(Login.address, 3838, msg, MessageHandler,
+		new SendToServer(SendToServer.MessagePort, msg, MessageHandler,
 				SendToServer.GET_USER_INFO).start();
 
 	}
