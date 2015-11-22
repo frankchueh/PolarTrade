@@ -69,8 +69,16 @@ public class ChatRoomList extends Activity {
 				case SendToServer.SUCCESS_GET_CHAT_LIST:
 					Toast.makeText(getApplicationContext(), msg.obj.toString(),
 							Toast.LENGTH_SHORT).show();
-					chatID_B = msg.obj.toString().split("\n")[0].split(",");
-					chatID_S = msg.obj.toString().split("\n")[1].split(",");
+					String BchatID_with_comma = msg.obj.toString().split("\n")[0];
+					String SchatID_with_comma = msg.obj.toString().split("\n")[1];
+					if(!BchatID_with_comma.equals(" "))
+					{
+						chatID_B = BchatID_with_comma.split(",");
+					}
+					if(!SchatID_with_comma.equals(" "))
+					{
+						chatID_S = SchatID_with_comma.split(",");
+					}
 					break;
 				case SendToServer.FAIL:
 					Toast.makeText(getApplicationContext(), "Get list fail",

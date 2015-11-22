@@ -125,8 +125,8 @@ public class UserinfoManager extends Activity {
 				
 				if(mPhoto!=null)
 				{
-					new SendToServer(SendToServer.MessagePort, mPhoto, MessageHandler,
-							SendToServer.UPDATE_USER_PHOTO).start();
+					new SendToServer(SendToServer.PhotoPort, mPhoto, MessageHandler,
+							SendToServer.UPLOAD_USER_PHOTO).start();
 				}
 
 			}
