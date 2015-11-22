@@ -57,7 +57,7 @@ public class Welcome extends Activity {
 						login = new FileManager(f.getPath());
 						String[] temp = login.readAllLine();
 						String msg = "Login\n" + temp[0] + "\n" + temp[1];
-						new SendToServer(Login.address, Login.port1, msg,
+						new SendToServer(SendToServer.MessagePort, msg,
 								MessageHandler, SendToServer.LOGIN).start();
 					}
 					

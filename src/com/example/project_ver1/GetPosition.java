@@ -122,7 +122,7 @@ public class GetPosition extends Service implements ConnectionCallbacks,
 			 		  user_Account + "\n" + 
 			 		  updateLocation.getLatitude() + "\n" + 
 			 		  updateLocation.getLongitude();
-			new SendToServer(Login.address, Login.port1, uploadString,
+			new SendToServer(SendToServer.MessagePort, uploadString,
 					MessageHandler, SendToServer.UPLOAD_LOCATE).start();
 		}
 		

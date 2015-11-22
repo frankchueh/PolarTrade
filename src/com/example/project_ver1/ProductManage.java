@@ -1,5 +1,15 @@
 package com.example.project_ver1;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.StreamCorruptedException;
+import java.util.ArrayList;
+
+import org.apache.commons.lang.SerializationUtils;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,22 +27,14 @@ public class ProductManage extends Activity {
 	private ListView productView;
 	ProductAdapter productAdapter;
 	
-	Product [] product_set;
+	ArrayList <Product> product_set = new ArrayList <Product>();
 	int [] pid_set;    // 使用者所有商品ID
-	String [] pName_set;	// 使用者所有商品名稱
-	int [] pPrice_set;   // 使用者所有商品價格
-	String[] pPhotoPath_set;   // 使用者所有商品照片路徑
-	String[] pInfoPath_set;   // 使用者所有商品資訊路徑
-	byte[][] pPhoto_set;   // 使用者所有商品照片
 	
 	String p_msg = "";  // 傳送 message
 	
 	int p_num = 0;  // 總商品數量
-	int p_allinfo_count = 0;   // 用來儲存商品所有資訊的 index
-	int p_photo_count = 0;   // 用來儲存商品照片的 index
+	int p_allinfo_count = 0; 
 	
-	public static  String address = "140.118.125.229";
-	public static int port = 3838;
 	Handler MessageHandler;
 	
 	@Override
@@ -47,24 +49,12 @@ public class ProductManage extends Activity {
 			public void handleMessage(Message msg) {
 				switch (msg.what) {
 				case SendToServer.SUCCESS_GET_PID:     // 成功取得使用者所有 pids
-					String [] temp_pid_set = (String[]) msg.obj;
-					p_num = temp_pid_set.length;   // 商品 ID 數量 = 使用者總商品數量
-					getAllProductsInfo(temp_pid_set);
+					byte[] temp_p = (byte[]) msg.obj;
+					product_set = (ArrayList<Product>) SerializationUtils.deserialize(temp_p);
+					//p_num = temp_pid_set.length;   // 商品 ID 數量 = 使用者總商品數量
+					//getAllProductsInfo(temp_pid_set);
 					Toast.makeText(getApplicationContext(), "Product ID download success", Toast.LENGTH_SHORT).show();
-					break;
-				case SendToServer.SUCCESS_GET_PRODUCTINFO:    // 成功取得 pid 對應的所有資訊 
-					String [] temp_pinfo_set = (String[]) msg.obj;
-					getProductPhoto(temp_pinfo_set);
-					break;
-				case SendToServer.SUCCESS_GET_PHOTO:   // 成功取得 pid 的商品照片
-					pPhoto_set[p_photo_count] = (byte[]) msg.obj;  // 取得所有照片
-					p_photo_count++;
-					if(p_photo_count == p_num) {   // 資料全部傳輸完成後 -> 總儲存
-						saveAllProductMessage();
-						Toast.makeText(getApplicationContext(), "All product download success", Toast.LENGTH_SHORT).show();
-						setListView();
-						break;
-					}	
+					setListView();
 					break;
 				case SendToServer.FAIL:
 					Toast.makeText(getApplicationContext(),"Product download failed", Toast.LENGTH_SHORT).show();
@@ -74,44 +64,8 @@ public class ProductManage extends Activity {
 		};
 		// 送出商品下載 thread
 		p_msg = "getUserProduct" + "\n" + mainActivity.Account;
-		new SendToServer(address,port,p_msg,MessageHandler,SendToServer.GET_USER_PRODUCT).start();	
-	}
-	
-	protected void getAllProductsInfo(String [] str) {
-		
-		pid_set = new int [p_num];
-		pName_set = new String [p_num];
-		pPrice_set = new int [p_num];
-		pPhotoPath_set = new String [p_num];
-		pInfoPath_set = new String [p_num];
-		pPhoto_set = new byte[p_num][];
-		product_set = new Product [p_num];
-		
-		for(int i = 0; i < p_num; i++) {
-			pid_set[i] = Integer.parseInt(str[i]);   // 將所有 pid 存起來
-			p_msg = "getProductInfo" + "\n" + str[i];
-			new SendToServer(address,port,p_msg,MessageHandler,SendToServer.GET_PRODUCT_INFO).start();
-		}
-	}
-	
-	protected void getProductPhoto(String [] str) {
-		
-		pName_set[p_allinfo_count] = str[0];     // 將特定 pid 的所有資訊存起來
-		pPrice_set[p_allinfo_count] = Integer.parseInt(str[1]);
-		pPhotoPath_set[p_allinfo_count] = str[2];
-		pInfoPath_set[p_allinfo_count] = str[3];
-		p_msg = "GetPhoto" + "\n" + pPhotoPath_set[p_allinfo_count++];  // 去取得其圖片
-		new SendToServer(address,port,p_msg,MessageHandler,SendToServer.GET_PHOTO).start();
-	}
-	
-	protected void saveAllProductMessage() {   // 儲存所有商品相關訊息
-		
-		product_set = new Product [p_num];
-		for(int i = 0; i < p_num; i++) {
-			
-			product_set[i] = new Product(pid_set[i],pName_set[i],pPrice_set[i],pInfoPath_set[i],pPhoto_set[i]);
-			//Toast.makeText(getApplicationContext(),pInfoPath_set[i], Toast.LENGTH_SHORT).show();
-		}
+		new SendToServer(SendToServer.MessagePort, p_msg, MessageHandler, 
+				SendToServer.GET_USER_PRODUCT).start();	
 	}
 	
 	protected void setListView() {
@@ -142,14 +96,14 @@ public class ProductManage extends Activity {
 		public int getCount() {
 			// TODO Auto-generated method stub
 			
-			return product_set.length;
+			return product_set.size();
 		}
 
 		@Override
 		public Object getItem(int position) {
 			// TODO Auto-generated method stub
 			
-			return product_set[position];
+			return product_set.get(position);
 		}
 
 		@Override
@@ -168,7 +122,7 @@ public class ProductManage extends Activity {
 					.findViewById(R.id.productName);
 			TextView txtProductPrice = (TextView) convertView
 					.findViewById(R.id.productPrice);
-			byte [] pPhoto = product_set[position].productPhoto;
+			byte [] pPhoto = product_set.get(position).productPhoto;
 			DisplayMetrics dm = new DisplayMetrics();
 			getWindowManager().getDefaultDisplay().getMetrics(dm);
 			int t_width = dm.widthPixels/3;
@@ -176,11 +130,11 @@ public class ProductManage extends Activity {
 			Bitmap bm = BitmapFactory.decodeByteArray(pPhoto, 0,
 					pPhoto.length, null);
 			
-			imgProduct.setMinimumHeight(t_height);;
-			imgProduct.setMinimumWidth(t_width);;
+			imgProduct.setMinimumHeight(t_height);
+			imgProduct.setMinimumWidth(t_width);
 			imgProduct.setImageBitmap(bm);
-			txtProductName.setText(product_set[position].productName);
-			txtProductPrice.setText(String.valueOf(product_set[position].productPrice));
+			txtProductName.setText(product_set.get(position).productName);
+			txtProductPrice.setText(String.valueOf(product_set.get(position).productPrice));
 			return convertView;
 		}
 	}
