@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import org.apache.commons.lang.SerializationUtils;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -77,11 +79,12 @@ public class ProductManage extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				// TODO Auto-generated method stub
-				
+				Intent it = new Intent();
+				it.putExtra("product", product_set.get(position));
+				it.setClass(ProductManage.this,ProductEdit.class);
+				startActivity(it);	
 			}
-		});
-			
+		});		
 	}
 	
 	class ProductAdapter extends BaseAdapter {
@@ -132,13 +135,27 @@ public class ProductManage extends Activity {
 			
 			imgProduct.setMinimumHeight(t_height);
 			imgProduct.setMinimumWidth(t_width);
-			imgProduct.setImageBitmap(bm);
+			imgProduct.setImageBitmap(getResizedBitmap(bm,100,100));
 			txtProductName.setText(product_set.get(position).productName);
 			txtProductPrice.setText(String.valueOf(product_set.get(position).productPrice));
 			return convertView;
 		}
 	}
-
 	
+	public Bitmap getResizedBitmap(Bitmap bm , int new_width , int new_height) {
+		
+		int width = bm.getWidth();
+		int height = bm.getHeight();
+		float scaleWidth = ((float) new_width) / width;
+		float scaleHeight = ((float) new_height) / height;
+		
+		Matrix m = new Matrix();
+		m.postScale(scaleWidth, scaleHeight);
+		
+		Bitmap resizedBitmap = Bitmap.createBitmap(bm,0,0,width,height,m,false);
+		bm.recycle();
+		
+		return resizedBitmap;
+	}
 }
 

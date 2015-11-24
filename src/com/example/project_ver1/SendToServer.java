@@ -12,6 +12,8 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 import android.os.Handler;
 import android.os.Message;
 
@@ -222,21 +224,19 @@ public class SendToServer extends Thread {
 
 				String[] pid_set;
 				pw.println(msg);
-
 				if (br.readLine().equals("success")) {
 					ObjectInputStream ois = new ObjectInputStream(
 							client.getInputStream());
 					byte [] temp = (byte[])ois.readObject();
 					return_msg.obj = temp;
 					return_msg.what = SUCCESS_GET_PID;
+					ois.close();
 				} else {
 					return_msg.what = FAIL;
 				}
-
 				break;
 
 			case GET_PRODUCT_INFO:
-				
 				// «O¯d
 				break;
 
