@@ -138,6 +138,7 @@ public class ProductManage extends Activity {
 			imgProduct.setImageBitmap(getResizedBitmap(bm,100,100));
 			txtProductName.setText(product_set.get(position).productName);
 			txtProductPrice.setText(String.valueOf(product_set.get(position).productPrice));
+			bm.recycle();
 			return convertView;
 		}
 	}
