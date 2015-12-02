@@ -6,12 +6,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-public class mainActivity extends Activity{
-	
-	Button btnUserInfo, btnChatroomList , btnProductUpload , btnStartService , btnQuitService,
-		   btnProductManage;
-	public static String Account;    // 使用者帳戶
-	
+public class mainActivity extends Activity {
+
+	Button btnUserInfo, btnChatroomList, btnProductUpload, btnStartService,
+			btnQuitService, btnProductManage;
+	public static String Account; // 使用者帳戶
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -25,15 +25,15 @@ public class mainActivity extends Activity{
 		btnProductManage = (Button) this.findViewById(R.id.btnProductManage);
 		Intent con = getIntent();
 		Account = con.getStringExtra("Account");
-		
+
 		// Start location upload service
-		/*Intent intent = new Intent(GetPosition.START_UPLOAD);
-		Bundle bundle = new Bundle();
-		bundle.putString("user Account", Account);
-		intent.putExtras(bundle);
-		startService(intent);*/
-		
-		btnUserInfo.setOnClickListener(new Button.OnClickListener(){
+		/*
+		 * Intent intent = new Intent(GetPosition.START_UPLOAD); Bundle bundle =
+		 * new Bundle(); bundle.putString("user Account", Account);
+		 * intent.putExtras(bundle); startService(intent);
+		 */
+
+		btnUserInfo.setOnClickListener(new Button.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -41,9 +41,10 @@ public class mainActivity extends Activity{
 				Intent it = new Intent();
 				it.setClass(mainActivity.this, UserInfo.class);
 				startActivity(it);
-			}});
-		
-		btnChatroomList.setOnClickListener(new Button.OnClickListener(){
+			}
+		});
+
+		btnChatroomList.setOnClickListener(new Button.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -51,9 +52,10 @@ public class mainActivity extends Activity{
 				Intent it = new Intent();
 				it.setClass(mainActivity.this, ChatRoomList.class);
 				startActivity(it);
-			}});
-		
-		btnProductUpload.setOnClickListener(new Button.OnClickListener(){
+			}
+		});
+
+		btnProductUpload.setOnClickListener(new Button.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -61,30 +63,33 @@ public class mainActivity extends Activity{
 				Intent it = new Intent();
 				it.setClass(mainActivity.this, OnShelf.class);
 				startActivity(it);
-			}});
-		
-		btnStartService.setOnClickListener(new Button.OnClickListener(){
+			}
+		});
+
+		btnStartService.setOnClickListener(new Button.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent(mainActivity.this,GetPosition.class);
+				Intent intent = new Intent(mainActivity.this, GetPosition.class);
 				Bundle bundle = new Bundle();
-				bundle.putString("Account",Account);
+				bundle.putString("Account", Account);
 				intent.putExtras(bundle);
 				startService(intent);
-			}});
-		
-		btnQuitService.setOnClickListener(new Button.OnClickListener(){
+			}
+		});
+
+		btnQuitService.setOnClickListener(new Button.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent(mainActivity.this,GetPosition.class);
+				Intent intent = new Intent(mainActivity.this, GetPosition.class);
 				stopService(intent);
-			}});
-		
-		btnProductManage.setOnClickListener(new Button.OnClickListener(){
+			}
+		});
+
+		btnProductManage.setOnClickListener(new Button.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -92,9 +97,9 @@ public class mainActivity extends Activity{
 				Intent it = new Intent();
 				it.setClass(mainActivity.this, ProductManage.class);
 				startActivity(it);
-			}});
-	    
+			}
+		});
+
 	}
-	
 
 }
