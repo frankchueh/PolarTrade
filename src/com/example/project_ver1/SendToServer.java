@@ -34,7 +34,8 @@ public class SendToServer extends Thread {
 			SUCCESS_GET_PID = 2007, SUCCESS_GET_PRODUCTINFO = 2008,
 			SUCCESS_UPLOAD_PHOTO = 2009;
 	
-	String address = "140.118.125.229"; // Server的address
+	//String address = "140.118.125.229"; // Server的address
+	String address = "192.168.0.102";
 	int Port; // server監聽的port
 	Socket client;
 	InetSocketAddress isa;
@@ -270,8 +271,12 @@ public class SendToServer extends Thread {
 				break;
 
 			case UPDATE_MESSAGE:
-				pw.println(msg.toString()+"\n----MESSAGE----END----");
-	
+				pw.println("UpdateMessage");
+				ObjectOutputStream oos = new ObjectOutputStream(
+						client.getOutputStream()); // 把訊息寫入
+				oos.writeObject(msg);
+				oos.flush();
+				
 				if(br.readLine().equals("success"))
 				{
 					return_msg.what = UPDATE_MESSAGE;
