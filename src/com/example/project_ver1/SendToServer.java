@@ -260,7 +260,7 @@ public class SendToServer extends Thread {
 					String data = "", line;
 
 					while ((line = br.readLine()) != null) {
-						data += line;
+						data += line + "\n";
 					}
 					return_msg.what = DOWNLOAD_MESSAGE;
 					return_msg.obj = data;
