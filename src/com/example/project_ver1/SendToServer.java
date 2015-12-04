@@ -242,7 +242,6 @@ public class SendToServer extends Thread {
 				break;
 
 			case LIST_CHAT_ROOM:
-
 				pw.println(msg.toString()); // ListChatRoom +\n+ UserAccount
 				if (br.readLine().equals("success")) {
 					String B = br.readLine();
@@ -251,7 +250,6 @@ public class SendToServer extends Thread {
 					return_msg.obj = B + "\n" + S;
 				} else
 					return_msg.what = FAIL;
-
 				break;
 
 			case DOWNLOAD_MESSAGE:
