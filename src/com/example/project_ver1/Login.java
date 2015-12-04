@@ -43,6 +43,7 @@ public class Login extends Activity {
 					f.mkdirs();	//避免資料夾不存在造成無法寫入
 					String LoginDataPath = savePath+"/login.dat";
 					FileManager loginData = new FileManager(LoginDataPath);
+					loginData.Clear();
 					loginData.writeLine(editAccount.getText().toString());	//寫入帳號
 					loginData.writeLine(editPassword.getText().toString());	//寫入密碼
 					startActivity(it);
