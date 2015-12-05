@@ -25,14 +25,18 @@ public class mainActivity extends Activity {
 		btnProductManage = (Button) this.findViewById(R.id.btnProductManage);
 		Intent con = getIntent();
 		Account = con.getStringExtra("Account");
-
+		
 		// Start location upload service
 		/*
 		 * Intent intent = new Intent(GetPosition.START_UPLOAD); Bundle bundle =
 		 * new Bundle(); bundle.putString("user Account", Account);
 		 * intent.putExtras(bundle); startService(intent);
 		 */
-
+		
+		Intent ChatNoti = new Intent(mainActivity.this, ChatRoomNoti.class);
+		ChatNoti.putExtra("Account", Account);
+		startService(ChatNoti);
+		
 		btnUserInfo.setOnClickListener(new Button.OnClickListener() {
 
 			@Override
@@ -101,5 +105,5 @@ public class mainActivity extends Activity {
 		});
 
 	}
-
+	
 }
