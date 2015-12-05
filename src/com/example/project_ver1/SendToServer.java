@@ -28,11 +28,13 @@ public class SendToServer extends Thread {
 			UPLOAD_PRODUCT_PHOTO = 1009, GET_USER_PRODUCT = 1010,
 			GET_PRODUCT_INFO = 1011, LIST_CHAT_ROOM = 1012,
 			GET_CHAT_ROOM = 1013, DOWNLOAD_MESSAGE = 1014,
-			UPDATE_MESSAGE = 1015, SUCCESS = 2001, FAIL = 2002,
+			UPDATE_MESSAGE = 1015, CHECK_MESSAGE = 1016, 
+			SUCCESS = 2001, FAIL = 2002,
 			SERVER_ERROR = 2003, SUCCESS_GET_PHOTO = 2004,
 			SUCCESS_GET_USERINFO = 2005, SUCCESS_GET_CHAT_LIST = 2006,
 			SUCCESS_GET_PID = 2007, SUCCESS_GET_PRODUCTINFO = 2008,
-			SUCCESS_UPLOAD_PHOTO = 2009;
+			SUCCESS_UPLOAD_PHOTO = 2009, GET_NEW_MESSAGE = 2010,
+			NO_MESSAGE = 2011;
 	
 	//String address = "140.118.125.229"; // Server的address
 	String address = "192.168.0.102";
@@ -297,7 +299,28 @@ public class SendToServer extends Thread {
 					return_msg.obj = "get chat room fail";
 				}
 				break;
-
+			
+			case CHECK_MESSAGE:
+				pw.println(msg.toString());
+				
+				String server_msg = br.readLine();
+				
+				if (server_msg.equals("get new message"))
+				{	//format should be ID,ID,ID.....,\n
+					String chatID = br.readLine();
+					return_msg.what = GET_NEW_MESSAGE;
+					return_msg.obj = chatID;
+				}
+				else if (server_msg.equals("no message"))
+				{
+					return_msg.what = NO_MESSAGE;
+				}
+				else {
+					return_msg.what = FAIL;
+					return_msg.obj = "check message fail";
+				}
+				break;
+			
 			}
 
 			pw.close(); // 等到command結束後執行關閉動作
