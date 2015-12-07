@@ -48,9 +48,9 @@ public class Chatroom extends Activity {
 				String sendMsg = editChatMsg.getText().toString();
 				editChatMsg.setText("");	//²MªÅ¿é¤J®Ø
 				
-				String command = "UpdateMessage\n" + chatID + "\n" + mainActivity.Account + "\n" + sendMsg;
+				String command = chatID + "\n" + mainActivity.Account + "\n" + sendMsg;
 				new SendToServer( SendToServer.MessagePort, command, 
-						MessageHandler, SendToServer.GET_CHAT_ROOM).start();
+						MessageHandler, SendToServer.UPDATE_MESSAGE).start();
 			}});
 		
 		MessageHandler = new Handler(){
