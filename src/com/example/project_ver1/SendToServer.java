@@ -31,8 +31,8 @@ public class SendToServer extends Thread {
 			UPDATE_MESSAGE = 1015, SUCCESS = 2001, FAIL = 2002,
 			SERVER_ERROR = 2003, SUCCESS_GET_PHOTO = 2004,
 			SUCCESS_GET_USERINFO = 2005, SUCCESS_GET_CHAT_LIST = 2006,
-			SUCCESS_GET_PID = 2007, SUCCESS_GET_PRODUCTINFO = 2008,
-			SUCCESS_UPLOAD_PHOTO = 2009;
+			SUCCESS_GET_PID = 2007,
+			SUCCESS_UPLOAD_PHOTO = 2009 , UPDATE_PRODUCT = 2010;
 	
 	String address = "140.118.125.229"; // Server的address
 	int Port; // server監聽的port
@@ -222,7 +222,6 @@ public class SendToServer extends Thread {
 
 			case GET_USER_PRODUCT:
 
-				String[] pid_set;
 				pw.println(msg);
 				if (br.readLine().equals("success")) {
 					ObjectInputStream ois = new ObjectInputStream(
@@ -235,9 +234,25 @@ public class SendToServer extends Thread {
 					return_msg.what = FAIL;
 				}
 				break;
+			
+			case UPDATE_PRODUCT:
+				
+				pw.println("updateProduct");
+				
+				if(br.readLine().equals("msg1 success")) {
+					ObjectOutputStream oos = new ObjectOutputStream(
+							client.getOutputStream());
+					oos.writeObject(msg);
+					oos.flush();
+					
+					if (br.readLine().equals("msg2 success")) {
+						return_msg.what = SUCCESS;
+					} else {
+						return_msg.what = FAIL;
+					}
 
-			case GET_PRODUCT_INFO:
-				// 保留
+					oos.close();
+				}
 				break;
 
 			case LIST_CHAT_ROOM:

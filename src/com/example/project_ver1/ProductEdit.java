@@ -2,6 +2,7 @@ package com.example.project_ver1;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
@@ -34,26 +35,32 @@ import android.widget.Toast;
 
 public class ProductEdit extends Activity {
 	
-	private Button btnProductUpload , btnCancelUpload , btnChangePhoto , btnDeletePhoto;
+	private Button btnProductUpdate , btnCancelUpdate , btnChangePhoto , btnDeletePhoto;
 	private EditText editProductName , editProductPrice , editProductInfo;
 	private ImageView productImage;
-	private Product editedProduct;
 	
 	String productName , productPrice , productInfo;
 	
+	int pid = -1;
 	private Bitmap myBitmap;
 	private File mPhoto;
+	String pinfo = "";
 	private String p_msg;
 	private File CropPhotoDir = new File(
 			Environment.getExternalStorageDirectory() + "/DCIM/CropPhoto");
 	private File TakePhotoDir = new File(
 			Environment.getExternalStorageDirectory() + "/DCIM/TakePhoto");
+	private File ProductPhotoDir = new File(
+			Environment.getExternalStorageDirectory() + "/DCIM/ProductPhoto");
+	Uri orgUri = null;
 	private final int PICTURE_FROM_CAMERA = 1000;
 	private final int PICTURE_FROM_ALBUM = 1001;
 	private final int PICTURE_AFTER_CROP = 1002;
 	private byte[] mContent = null;  // 用於儲存商品照片資料 (byte) -> 用於傳輸
 	// MessageHandler 宣告
 	Handler MessageHandler;
+	FileOutputStream fos = null;
+	Product updated_product = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -62,17 +69,26 @@ public class ProductEdit extends Activity {
 		
 		this.objectInitialize();
 		Intent call_it = getIntent();
-		editedProduct = (Product) call_it.getSerializableExtra("product");
+		Bundle bu = call_it.getExtras();
 		this.setButtonClick();
 		
-		editProductName.setText(editedProduct.productName);
-		editProductPrice.setText(String.valueOf(editedProduct.productPrice));
-		editProductInfo.setText(new String(editedProduct.productInfo,Charset.forName("UTF-8")));
-		byte [] pPhoto = editedProduct.productPhoto;
-		Bitmap bm = BitmapFactory.decodeByteArray(pPhoto, 0,
-				pPhoto.length, null);
-		productImage.setImageBitmap(bm);
+		pid = bu.getInt("id");
+		editProductName.setText(bu.getString("name"));
+		editProductPrice.setText(String.valueOf(bu.getInt("price")));
+		pinfo = new String(bu.getByteArray("info"),Charset.forName("UTF-8"));
+		editProductInfo.setText(pinfo);
 		
+		try {
+		orgUri = Uri.parse(bu.getString("photo"));
+		ContentResolver contentResolver = getContentResolver();
+		mContent = readStream(contentResolver.openInputStream(orgUri));
+		Bitmap bm = BitmapFactory.decodeByteArray(mContent, 0,
+				mContent.length, null);
+		productImage.setImageBitmap(bm);
+		} catch(Exception e) {
+				e.printStackTrace();
+		}
+
 		MessageHandler = new Handler() {
 
 			public void handleMessage(Message msg) {
@@ -87,11 +103,12 @@ public class ProductEdit extends Activity {
 		};
 		
 	}
+
 	
 private void objectInitialize() {
 		
-		btnProductUpload = (Button) this.findViewById(R.id.update_product);
-		btnCancelUpload = (Button) this.findViewById(R.id.cancel_update);
+		btnProductUpdate = (Button) this.findViewById(R.id.update_product);
+		btnCancelUpdate = (Button) this.findViewById(R.id.cancel_update);
 		btnChangePhoto= (Button) this.findViewById(R.id.changeProductPhoto);
 		btnDeletePhoto= (Button) this.findViewById(R.id.deleteProductPhoto);
 		editProductName = (EditText) this.findViewById(R.id.NewproductNameText);
@@ -103,7 +120,7 @@ private void objectInitialize() {
 private void setButtonClick() {
 	
 	productInfo = "";
-	btnProductUpload.setOnClickListener(new Button.OnClickListener() {
+	btnProductUpdate.setOnClickListener(new Button.OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			
@@ -136,28 +153,51 @@ private void setButtonClick() {
 						Toast.LENGTH_LONG).show();
 				return;
 			}
-			
-			String msg = "";
-			msg += "InsertProduct\n" + productName + "\n"
-					+ productPrice +"\n"
-					+ mainActivity.Account;
+		
 			String info_msg = productInfo;
 			
-			String [] msg_set = { msg , info_msg };  // 包含 ( productName + productPrice ) + (productInfo)
-			
-		    //new SendToServer(SendToServer.MessagePort ,msg_set,MessageHandler,SendToServer.UPDATE_PRODUCT).start();
-		    //new SendToServer(SendToServer.PhotoPort ,mContent,MessageHandler,SendToServer.UPDATE_PRODUCT_PHOTO).start();
+			updated_product = new Product(pid , productName , Integer.parseInt(productPrice) , info_msg.getBytes() , mContent);
+			byte[] send_P = SerializationUtils.serialize(updated_product);
+		    new SendToServer(SendToServer.MessagePort ,send_P,MessageHandler,SendToServer.UPDATE_PRODUCT).start();
 		    
-			Toast.makeText(getApplicationContext(),"done upload",
+			Toast.makeText(getApplicationContext(),"done update",
 					Toast.LENGTH_LONG).show();
+			
+			Intent it = new Intent();							// 使用 intent 將更新資訊回傳 ProductManage
+			Bundle bu = new Bundle();
+			bu.putString("name", productName);					// 新名字
+			bu.putInt("price", Integer.parseInt(productPrice)); // 新價格
+			bu.putByteArray("info",info_msg.getBytes());		// 新商品資訊
+			
+			String localTempImgFileName = String.valueOf(pid) + ".jpg";		// 照片更新
+			ProductPhotoDir.mkdirs();
+			mPhoto = new File(ProductPhotoDir,localTempImgFileName);
+			Uri uri2 = Uri.fromFile(mPhoto);					// 新照片 Url
+			
+			Bitmap bm = BitmapFactory.decodeByteArray(mContent, 0,
+					mContent.length, null);
+	
+			try {
+				fos = new FileOutputStream(mPhoto);				// 儲存照片
+				bm.compress(Bitmap.CompressFormat.JPEG,80,fos);
+				fos.close();
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+			
+			bu.putString("photo", uri2.toString());
+			it.putExtras(bu);
+			setResult(ProductManage.UPDATE_SUCCESS , it);
+			finish();
 		}
 	});
 	
-	btnCancelUpload.setOnClickListener(new Button.OnClickListener() {
+	btnCancelUpdate.setOnClickListener(new Button.OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			
-			
+			setResult(ProductManage.UPDATE_CANCEL);
+			finish();
 		}
 	});
 	

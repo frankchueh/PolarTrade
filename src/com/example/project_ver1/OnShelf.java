@@ -147,6 +147,7 @@ public class OnShelf extends Activity {
 			    
 				Toast.makeText(getApplicationContext(),"done upload",
 						Toast.LENGTH_LONG).show();
+				finish();
 			}
 		});
 		
@@ -154,7 +155,7 @@ public class OnShelf extends Activity {
 			@Override
 			public void onClick(View v) {
 				
-				
+				finish();
 			}
 		});
 		
