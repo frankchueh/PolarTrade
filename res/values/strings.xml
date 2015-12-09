@@ -7,5 +7,6 @@
     <string name="title_activity_on_shelf">OnShelf</string>
     <string name="title_activity_product_manage">ProductManage</string>
     <string name="title_activity_product_edit">ProductEdit</string>
+    <string name="title_activity_product_info">ProductInfo</string>
 
 </resources>

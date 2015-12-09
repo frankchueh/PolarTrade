@@ -107,7 +107,7 @@ public class ProductManage extends Activity {
 				bu.putString("photo",u.toString());   // 商品圖片超連結
 				
 				it.putExtras(bu);
-				it.setClass(ProductManage.this,ProductEdit.class);
+				it.setClass(ProductManage.this,ProductInfo.class);
 				startActivityForResult(it , position);	
 			}
 		});		
@@ -185,7 +185,6 @@ public class ProductManage extends Activity {
 			imgProduct.setImageBitmap(getResizedBitmap(bm,100,100));
 			txtProductName.setText(product_set.get(position).productName);
 			txtProductPrice.setText(String.valueOf(product_set.get(position).productPrice));
-			//bm.recycle();
 
 			return convertView;
 		}

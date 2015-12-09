@@ -36,8 +36,8 @@ public class SendToServer extends Thread {
 			SUCCESS_UPLOAD_PHOTO = 2009, GET_NEW_MESSAGE = 2010,
 			NO_MESSAGE = 2011 , UPDATE_PRODUCT = 2012;
 	
-	//String address = "140.118.125.229"; // Server的address
-	String address = "192.168.0.102";
+	String address = "140.118.125.229"; // Server的address
+	//String address = "192.168.0.102";
 	int Port; // server監聽的port
 	Socket client;
 	InetSocketAddress isa;
