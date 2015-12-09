@@ -65,8 +65,18 @@ public class ProductManage extends Activity {
 					Toast.makeText(getApplicationContext(), "Product ID download success", Toast.LENGTH_SHORT).show();
 					setListView();	// ³]¸mµe­±
 					break;
+				
+				case SendToServer.SUCCESS:
+					
+					break;
+					
 				case SendToServer.FAIL:
 					Toast.makeText(getApplicationContext(),"Product download failed", Toast.LENGTH_SHORT).show();
+					
+					break;
+				
+				case SendToServer.DELETE_FAIL:
+					Toast.makeText(getApplicationContext(),"Product delete failed", Toast.LENGTH_SHORT).show();
 				}
 				super.handleMessage(msg);
 			}
@@ -172,6 +182,7 @@ public class ProductManage extends Activity {
 			ImageView imgProduct = (ImageView) convertView.findViewById(R.id.productPhoto);
 			TextView txtProductName = (TextView) convertView.findViewById(R.id.productName);
 			TextView txtProductPrice = (TextView) convertView.findViewById(R.id.productPrice);
+			Button productDelete = (Button) convertView.findViewById(R.id.deletedProduct);
 			byte [] pPhoto = product_set.get(position).productPhoto;
 			
 			DisplayMetrics dm = new DisplayMetrics();
@@ -185,7 +196,20 @@ public class ProductManage extends Activity {
 			imgProduct.setImageBitmap(getResizedBitmap(bm,100,100));
 			txtProductName.setText(product_set.get(position).productName);
 			txtProductPrice.setText(String.valueOf(product_set.get(position).productPrice));
-
+			
+			productDelete.setTag(position);
+			productDelete.setOnClickListener(new Button.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					int p = (int)v.getTag();
+					p_msg = "deleteProduct" + "\n" + product_set.get(p).productID;
+					new SendToServer(SendToServer.MessagePort, p_msg, MessageHandler, 
+							SendToServer.DELETE_PRODUCT).start();	
+					
+					product_set.remove(p);
+					productAdapter.notifyDataSetChanged();
+				}
+			});
 			return convertView;
 		}
 	}
