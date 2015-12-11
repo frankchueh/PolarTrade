@@ -62,12 +62,12 @@ public class ProductManage extends Activity {
 				case SendToServer.SUCCESS_GET_PID:     // 成功取得使用者所有 pids
 					byte[] temp_p = (byte[]) msg.obj;
 					product_set = (ArrayList<Product>) SerializationUtils.deserialize(temp_p);
-					Toast.makeText(getApplicationContext(), "Product ID download success", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(), "Products download success", Toast.LENGTH_SHORT).show();
 					setListView();	// 設置畫面
 					break;
 				
-				case SendToServer.SUCCESS:
-					
+				case SendToServer.NO_PRODUCTS:
+					Toast.makeText(getApplicationContext(), "No product exist", Toast.LENGTH_SHORT).show();
 					break;
 					
 				case SendToServer.FAIL:
@@ -146,6 +146,14 @@ public class ProductManage extends Activity {
 		}
 	}
 	
+	static class ViewHolder {
+		
+		public TextView productName;
+		public TextView productPrice;
+		public ImageView productPhoto;
+		public Button deleteProduct;
+	}
+	
 	class ProductAdapter extends BaseAdapter {
 
 		LayoutInflater myInflater;
@@ -177,39 +185,50 @@ public class ProductManage extends Activity {
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			// TODO Auto-generated method stub
-			convertView = myInflater.inflate(R.layout.productitem, parent , false);
+			ViewHolder pViewHolder = null;
 			
-			ImageView imgProduct = (ImageView) convertView.findViewById(R.id.productPhoto);
-			TextView txtProductName = (TextView) convertView.findViewById(R.id.productName);
-			TextView txtProductPrice = (TextView) convertView.findViewById(R.id.productPrice);
-			Button productDelete = (Button) convertView.findViewById(R.id.deletedProduct);
+			if(convertView == null) {
+				
+				pViewHolder = new ViewHolder(); 
+				convertView = myInflater.inflate(R.layout.productitem,null);
+				pViewHolder.productPhoto = (ImageView) convertView.findViewById(R.id.productPhoto);
+				pViewHolder.productName = (TextView) convertView.findViewById(R.id.productName);
+				pViewHolder.productPrice = (TextView) convertView.findViewById(R.id.productPrice);
+				pViewHolder.deleteProduct = (Button) convertView.findViewById(R.id.deletedProduct);
+				
+				DisplayMetrics dm = new DisplayMetrics();
+				getWindowManager().getDefaultDisplay().getMetrics(dm);
+				int t_width = dm.widthPixels/3;
+				int t_height = dm.heightPixels/4;
+				pViewHolder.productPhoto.setMinimumHeight(t_height);
+				pViewHolder.productPhoto.setMinimumWidth(t_width);
+				
+				pViewHolder.deleteProduct.setOnClickListener(new Button.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						int p = (int)v.getTag();
+						p_msg = "deleteProduct" + "\n" + product_set.get(p).productID;
+						new SendToServer(SendToServer.MessagePort, p_msg, MessageHandler, 
+								SendToServer.DELETE_PRODUCT).start();	
+						
+						product_set.remove(p);
+						productAdapter.notifyDataSetChanged();
+					}
+				});
+				
+				convertView.setTag(pViewHolder);
+			}
+			
+			// fill data
+			ViewHolder vi = (ViewHolder) convertView.getTag();
 			byte [] pPhoto = product_set.get(position).productPhoto;
-			
-			DisplayMetrics dm = new DisplayMetrics();
-			getWindowManager().getDefaultDisplay().getMetrics(dm);
-			int t_width = dm.widthPixels/3;
-			int t_height = dm.heightPixels/4;
 			Bitmap bm = BitmapFactory.decodeByteArray(pPhoto, 0,
 					pPhoto.length, null);
-			imgProduct.setMinimumHeight(t_height);
-			imgProduct.setMinimumWidth(t_width);
-			imgProduct.setImageBitmap(getResizedBitmap(bm,100,100));
-			txtProductName.setText(product_set.get(position).productName);
-			txtProductPrice.setText(String.valueOf(product_set.get(position).productPrice));
+			vi.productPhoto.setImageBitmap(getResizedBitmap(bm,100,100));
+			vi.productName.setText(product_set.get(position).productName);
+			vi.productPrice.setText(String.valueOf(product_set.get(position).productPrice));
+			vi.deleteProduct.setTag(position);
 			
-			productDelete.setTag(position);
-			productDelete.setOnClickListener(new Button.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					int p = (int)v.getTag();
-					p_msg = "deleteProduct" + "\n" + product_set.get(p).productID;
-					new SendToServer(SendToServer.MessagePort, p_msg, MessageHandler, 
-							SendToServer.DELETE_PRODUCT).start();	
-					
-					product_set.remove(p);
-					productAdapter.notifyDataSetChanged();
-				}
-			});
 			return convertView;
 		}
 	}
@@ -259,5 +278,6 @@ public class ProductManage extends Activity {
 		in.close();
 		return data;
 	}
+	
 }
 

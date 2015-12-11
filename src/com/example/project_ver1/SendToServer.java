@@ -28,7 +28,7 @@ public class SendToServer extends Thread {
 			UPLOAD_PRODUCT_PHOTO = 1009, GET_USER_PRODUCT = 1010,
 			GET_PRODUCT_INFO = 1011, LIST_CHAT_ROOM = 1012,
 			GET_CHAT_ROOM = 1013, DOWNLOAD_MESSAGE = 1014,
-			UPDATE_MESSAGE = 1015, CHECK_MESSAGE = 1016, 
+			UPDATE_MESSAGE = 1015, CHECK_MESSAGE = 1016 , NO_PRODUCTS = 1017, 
 			SUCCESS = 2001, FAIL = 2002,
 			SERVER_ERROR = 2003, SUCCESS_GET_PHOTO = 2004,
 			SUCCESS_GET_USERINFO = 2005, SUCCESS_GET_CHAT_LIST = 2006,
@@ -233,6 +233,8 @@ public class SendToServer extends Thread {
 					return_msg.obj = temp;
 					return_msg.what = SUCCESS_GET_PID;
 					ois.close();
+				} else if (br.readLine().equals("no products")) {
+					return_msg.what = NO_PRODUCTS;
 				} else {
 					return_msg.what = FAIL;
 				}
