@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="9"
         android:targetSdkVersion="21" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -69,16 +69,20 @@
             android:name=".ProductManage"
             android:label="@string/title_activity_product_manage" >
         </activity>
-        <activity android:name=".Chatroom" >
-        </activity>
+        
         <activity
             android:name=".ProductEdit"
             android:label="@string/title_activity_product_edit" >
         </activity>
+        
         <activity
             android:name=".ProductInfo"
             android:label="@string/title_activity_product_info" >
         </activity>
+
+        <activity android:name="Chatroom"></activity>
+        
+        <service android:name="ChatRoomNoti"></service>
     </application>
 
 </manifest>
