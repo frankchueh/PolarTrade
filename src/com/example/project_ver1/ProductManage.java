@@ -62,6 +62,7 @@ public class ProductManage extends Activity {
 				case SendToServer.SUCCESS_GET_PID:     // 成功取得使用者所有 pids
 					byte[] temp_p = (byte[]) msg.obj;
 					product_set = (ArrayList<Product>) SerializationUtils.deserialize(temp_p);
+//					product_set = (ArrayList<Product>) msg.obj;
 					Toast.makeText(getApplicationContext(), "Products download success", Toast.LENGTH_SHORT).show();
 					setListView();	// 設置畫面
 					break;
@@ -206,7 +207,7 @@ public class ProductManage extends Activity {
 				pViewHolder.deleteProduct.setOnClickListener(new Button.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						int p = (int)v.getTag();
+						int p = (Integer) v.getTag();
 						p_msg = "deleteProduct" + "\n" + product_set.get(p).productID;
 						new SendToServer(SendToServer.MessagePort, p_msg, MessageHandler, 
 								SendToServer.DELETE_PRODUCT).start();	
