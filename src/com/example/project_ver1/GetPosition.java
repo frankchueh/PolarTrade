@@ -34,11 +34,6 @@ public class GetPosition extends Service implements ConnectionCallbacks,
 	private LocationRequest locationRequest;
 	// 上傳座標字串
 	private String uploadString;
-	// Server address
-
-//	public String address = "140.118.125.229";
-	// 連接 Port
-//	public int port = 3838;
 	// 使用者 ID
     String user_Account = "";
 	// message handler
