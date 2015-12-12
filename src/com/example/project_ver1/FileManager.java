@@ -99,6 +99,7 @@ public class FileManager {
 		try {
 			fos = new FileOutputStream(savePath);
 			fos.write(buffer);
+			fos.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
