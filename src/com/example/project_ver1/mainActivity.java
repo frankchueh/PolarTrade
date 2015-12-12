@@ -9,7 +9,7 @@ import android.widget.Button;
 public class mainActivity extends Activity {
 
 	Button btnUserInfo, btnChatroomList, btnProductUpload, btnStartService,
-			btnQuitService, btnProductManage;
+			btnQuitService, btnProductManage, btnSearchProduct;
 	public static String Account; // ¨Ï¥ÎªÌ±b¤á
 
 	@Override
@@ -17,12 +17,15 @@ public class mainActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		
 		btnUserInfo = (Button) this.findViewById(R.id.btnUserInfo);
 		btnChatroomList = (Button) this.findViewById(R.id.btnChatroomList);
 		btnProductUpload = (Button) this.findViewById(R.id.btnProductUpload);
 		btnStartService = (Button) this.findViewById(R.id.btnStartService);
 		btnQuitService = (Button) this.findViewById(R.id.btnQuitService);
 		btnProductManage = (Button) this.findViewById(R.id.btnProductManage);
+		btnSearchProduct = (Button) this.findViewById(R.id.btnSearchProduct);
+		
 		Intent con = getIntent();
 		Account = con.getStringExtra("Account");
 		
@@ -103,7 +106,17 @@ public class mainActivity extends Activity {
 				startActivity(it);
 			}
 		});
+		
+		btnSearchProduct.setOnClickListener(new Button.OnClickListener(){
 
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Intent it = new Intent();
+				it.setClass(mainActivity.this, SearchProduct.class);
+				startActivity(it);
+			}});
+		
 	}
 	
 }
