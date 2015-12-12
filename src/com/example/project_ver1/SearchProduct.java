@@ -133,11 +133,13 @@ public class SearchProduct extends Activity {
 				bm.recycle();
 				u = Uri.fromFile(pfile);
 				
+				bu.putString("user", "buyer");
 				bu.putInt("id", product_set.get(position).productID);
 				bu.putString("name",product_set.get(position).productName);  // 傳遞商品名稱
 				bu.putInt("price",product_set.get(position).productPrice);   // 商品價格
 				bu.putByteArray("info", product_set.get(position).productInfo);  // 商品資訊
 				bu.putString("photo",u.toString());   // 商品圖片超連結
+				bu.putInt("sellerID", product_set.get(position).userID);
 				
 				it.putExtras(bu);
 				it.setClass(SearchProduct.this, ProductInfo.class);
