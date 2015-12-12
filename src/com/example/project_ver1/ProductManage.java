@@ -110,7 +110,7 @@ public class ProductManage extends Activity {
 				}
 				bm.recycle();
 				u = Uri.fromFile(pfile);
-				
+				bu.putString("user", "seller");
 				bu.putInt("id", product_set.get(position).productID);
 				bu.putString("name",product_set.get(position).productName);  // 傳遞商品名稱
 				bu.putInt("price",product_set.get(position).productPrice);   // 商品價格
