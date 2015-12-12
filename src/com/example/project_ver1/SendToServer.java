@@ -38,7 +38,8 @@ public class SendToServer extends Thread {
 			SUCCESS_UPLOAD_PHOTO = 2009, GET_NEW_MESSAGE = 2010,
 			NO_MESSAGE = 2011 , DELETE_FAIL = 2012, 
 			GET_SEARCH_RESULT = 2013, NO_SEARCH_RESULT = 2014,
-			GET_LOCATE_SUCCESS = 2015, GET_LOCATE_FAIL = 2016;
+			GET_LOCATE_SUCCESS = 2015, GET_LOCATE_FAIL = 2016,
+			UPDATE_MESSAGE_SUCCESS = 2017;
 	
 //	String address = "140.118.125.229"; // Serverªºaddress
 	String address = "192.168.0.102";
@@ -321,7 +322,7 @@ public class SendToServer extends Thread {
 				
 				if(br.readLine().equals("success"))
 				{
-					return_msg.what = UPDATE_MESSAGE;
+					return_msg.what = UPDATE_MESSAGE_SUCCESS;
 				}
 				else
 				{
