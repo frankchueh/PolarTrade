@@ -30,7 +30,7 @@ public class SendToServer extends Thread {
 			GET_CHAT_ROOM = 1013, DOWNLOAD_MESSAGE = 1014,
 			UPDATE_MESSAGE = 1015, CHECK_MESSAGE = 1016 , NO_PRODUCTS = 1017,
 			UPDATE_PRODUCT = 1018 , DELETE_PRODUCT = 1019, SEARCH_PRODUCT = 1020,
-			GET_LOCATE = 1021,
+			GET_LOCATE = 1021, GET_PRODUCT = 1022,
 			SUCCESS = 2001, FAIL = 2002,
 			SERVER_ERROR = 2003, SUCCESS_GET_PHOTO = 2004,
 			SUCCESS_GET_USERINFO = 2005, SUCCESS_GET_CHAT_LIST = 2006,
@@ -379,6 +379,20 @@ public class SendToServer extends Thread {
 				}
 				else
 				{
+					return_msg.what = FAIL;
+				}
+				break;
+				
+			case GET_PRODUCT:
+				pw.println(msg);
+				if (br.readLine().equals("success")) {
+					ObjectInputStream ois = new ObjectInputStream(
+							client.getInputStream());
+					byte [] temp = (byte[])ois.readObject();
+					return_msg.obj = temp;
+					return_msg.what = SUCCESS;
+					ois.close();
+				} else{
 					return_msg.what = FAIL;
 				}
 				break;
