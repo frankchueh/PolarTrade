@@ -37,6 +37,8 @@ public class SearchProduct extends Activity {
 	
 	private ListView resultView;
 	ProductAdapter productAdapter;
+	Button btnSearch;
+	
 	private File mpPhoto;
 	private File ProductPhotoDir = new File(
 			Environment.getExternalStorageDirectory() + "/DCIM/ProductPhoto");
@@ -49,20 +51,21 @@ public class SearchProduct extends Activity {
 	int p_num = 0;  // 總商品數量
 	double[] position;
 	Handler MessageHandler;
-	
+	String command;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_product_search);
 		resultView = (ListView)findViewById(R.id.resultListView);
-						
+		btnSearch = (Button)findViewById(R.id.btnSearch);
+		
 		MessageHandler = new Handler() {
 			public void handleMessage(Message msg) {
 				switch (msg.what) {
 				case SendToServer.GET_LOCATE_SUCCESS:
 					position = (double[]) msg.obj;
-					Toast.makeText(getApplicationContext(), ""+position[0]+","+position[1], Toast.LENGTH_SHORT).show();
-					String command = "searchProduct\n" + position[0]+ "\n" + position[1] + "\n" + mainActivity.Account;
+//					Toast.makeText(getApplicationContext(), ""+position[0]+","+position[1], Toast.LENGTH_SHORT).show();
+					command = "searchProduct\n" + position[0]+ "\n" + position[1] + "\n" + mainActivity.Account;
 					new SendToServer(SendToServer.MessagePort, command,
 							MessageHandler, SendToServer.SEARCH_PRODUCT).start();
 					break;
@@ -71,10 +74,23 @@ public class SearchProduct extends Activity {
 					break;
 				case SendToServer.GET_SEARCH_RESULT:
 					String[] result = msg.obj.toString().split("\n");
-					Toast.makeText(getApplicationContext(), msg.obj.toString(), Toast.LENGTH_SHORT).show();
+					String pid = "";
+					for(String tem:result)
+					{
+						pid += tem.split(":")[1];
+					}
+//					Toast.makeText(getApplicationContext(), msg.obj.toString(), Toast.LENGTH_SHORT).show();
+					command = "getProduct\n" + pid + "\n";
+					new SendToServer(SendToServer.MessagePort, command,
+							MessageHandler, SendToServer.GET_PRODUCT).start();
 					break;
 				case SendToServer.NO_SEARCH_RESULT:
 					Toast.makeText(getApplicationContext(), "No Result", Toast.LENGTH_SHORT).show();
+					break;
+				case SendToServer.SUCCESS:
+					product_set = (ArrayList<Product>) SerializationUtils.deserialize((byte[])msg.obj);
+					setListView();
+					Toast.makeText(getApplicationContext(), "Get Product Success", Toast.LENGTH_SHORT).show();
 					break;
 				case SendToServer.FAIL:
 					Toast.makeText(getApplicationContext(), "Search product failed", Toast.LENGTH_SHORT).show();
@@ -84,11 +100,14 @@ public class SearchProduct extends Activity {
 			}
 		};
 		
-
-		String command = "getLocate\n" + mainActivity.Account;
-		new SendToServer(SendToServer.MessagePort, command,
-				MessageHandler, SendToServer.GET_LOCATE).start();
-		
+		btnSearch.setOnClickListener(new Button.OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				String command = "getLocate\n" + mainActivity.Account;
+				new SendToServer(SendToServer.MessagePort, command,
+						MessageHandler, SendToServer.GET_LOCATE).start();
+			}});
 	}
 	
 	protected void setListView() {
@@ -128,11 +147,9 @@ public class SearchProduct extends Activity {
 	}
 	
 	static class ViewHolder {
-		
 		public TextView productName;
 		public TextView productPrice;
 		public ImageView productPhoto;
-		public Button deleteProduct;
 	}
 	
 	class ProductAdapter extends BaseAdapter {
@@ -171,31 +188,17 @@ public class SearchProduct extends Activity {
 			if(convertView == null) {
 				
 				pViewHolder = new ViewHolder(); 
-				convertView = myInflater.inflate(R.layout.productitem,null);
+				convertView = myInflater.inflate(R.layout.product_result,null);
 				pViewHolder.productPhoto = (ImageView) convertView.findViewById(R.id.productPhoto);
 				pViewHolder.productName = (TextView) convertView.findViewById(R.id.productName);
 				pViewHolder.productPrice = (TextView) convertView.findViewById(R.id.productPrice);
-				pViewHolder.deleteProduct = (Button) convertView.findViewById(R.id.deletedProduct);
-				
+							
 				DisplayMetrics dm = new DisplayMetrics();
 				getWindowManager().getDefaultDisplay().getMetrics(dm);
 				int t_width = dm.widthPixels/3;
 				int t_height = dm.heightPixels/4;
 				pViewHolder.productPhoto.setMinimumHeight(t_height);
 				pViewHolder.productPhoto.setMinimumWidth(t_width);
-				
-				pViewHolder.deleteProduct.setOnClickListener(new Button.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						int p = (Integer) v.getTag();
-						p_msg = "deleteProduct" + "\n" + product_set.get(p).productID;
-						new SendToServer(SendToServer.MessagePort, p_msg, MessageHandler, 
-								SendToServer.DELETE_PRODUCT).start();	
-						
-						product_set.remove(p);
-						productAdapter.notifyDataSetChanged();
-					}
-				});
 				
 				convertView.setTag(pViewHolder);
 			}
@@ -208,7 +211,6 @@ public class SearchProduct extends Activity {
 			vi.productPhoto.setImageBitmap(getResizedBitmap(bm,100,100));
 			vi.productName.setText(product_set.get(position).productName);
 			vi.productPrice.setText(String.valueOf(product_set.get(position).productPrice));
-			vi.deleteProduct.setTag(position);
 			
 			return convertView;
 		}
