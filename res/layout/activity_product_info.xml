@@ -11,8 +11,7 @@
     <ScrollView
         android:id="@+id/scrollView1"
         android:layout_width="match_parent"
-        android:layout_height="429dp"
-        android:layout_weight="0.67" >
+        android:layout_height="450dp" >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -72,10 +71,39 @@
         </LinearLayout>
     </ScrollView>
 
-    <Button
-        android:id="@+id/productInfo_editButton"
-        android:layout_width="280dp"
+    <LinearLayout
+        android:id="@+id/sellerLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Edit" />
+        android:layout_gravity="end" >
+
+        <Button
+            android:id="@+id/productInfo_editButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="編輯" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/buyerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_weight="0.67" >
+
+        <Button
+            android:id="@+id/btnChat"
+            android:layout_width="147dp"
+            android:layout_height="wrap_content"
+            android:text="議價面交" />
+
+        <Button
+            android:id="@+id/btnSaveProduct"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="放入購物車" />
+
+    </LinearLayout>
 
 </LinearLayout>
