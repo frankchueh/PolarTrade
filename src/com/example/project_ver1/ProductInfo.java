@@ -14,9 +14,11 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class ProductInfo extends Activity {
@@ -24,9 +26,12 @@ public class ProductInfo extends Activity {
 	private EditText ProductDetailInfo;
 	private TextView ProductName , ProductPrice;
 	private ImageView ProductImage;
-	private Button productEditButton;
+	private Button productEditButton, btnChat, btnSaveProduct;
+	LinearLayout buyerLayout,sellerLayout;
 	
 	int pid = -1;
+	int sid = -1;
+	
 	String productName = "";
 	String productInfo = "";
 	int productPrice = 0;
@@ -43,14 +48,20 @@ public class ProductInfo extends Activity {
 		
 		this.objectInitialize();
 		this.setButtonClick();
+		
 		Intent call_it = getIntent();
 		Bundle bu = call_it.getExtras();
+		String user = bu.getString("user");
+		if(user.equals("buyer"))
+			sellerLayout.removeAllViews();
+		else if(user.equals("seller"))
+			buyerLayout.removeAllViews();
 		
 		pid = bu.getInt("id");
 		productName = bu.getString("name");
 		productPrice = bu.getInt("price");
 		productInfo = new String(bu.getByteArray("info"),Charset.forName("UTF-8"));
-		
+		sid = bu.getInt("sellerID");
 		ProductName.setText(productName);
 		ProductPrice.setText(String.valueOf(productPrice));
 		ProductDetailInfo.setText(productInfo);
@@ -91,6 +102,10 @@ public class ProductInfo extends Activity {
 		ProductDetailInfo = (EditText) this.findViewById(R.id.productInfo_Info);
 		ProductImage = (ImageView) this.findViewById(R.id.productInfo_Photo);
 		productEditButton = (Button) this.findViewById(R.id.productInfo_editButton);
+		buyerLayout = (LinearLayout)findViewById(R.id.buyerLayout);
+		sellerLayout = (LinearLayout)findViewById(R.id.sellerLayout);
+		btnChat = (Button) this.findViewById(R.id.btnChat);
+		btnSaveProduct = (Button) this.findViewById(R.id.btnSaveProduct);
 	}
 	
 	private void setButtonClick() {
@@ -113,6 +128,18 @@ public class ProductInfo extends Activity {
 				startActivityForResult(it , EDIT_PRODUCT);		
 			}
 		});
+		
+		btnChat.setOnClickListener(new Button.OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Intent it = new Intent();
+				it.setClass(ProductInfo.this, Chatroom.class);
+				it.putExtra("produceID", pid);
+				it.putExtra("sellerID", sid);
+				startActivity(it);
+			}});
 	}
 	
 	@Override
