@@ -156,7 +156,8 @@ private void setButtonClick() {
 		
 			String info_msg = productInfo;
 			
-			updated_product = new Product(pid , productName , Integer.parseInt(productPrice) , info_msg.getBytes() , mContent);
+			updated_product = new Product(pid, productName, Integer.parseInt(productPrice),
+												info_msg.getBytes(), mContent, -1);
 			byte[] send_P = SerializationUtils.serialize(updated_product);
 		    new SendToServer(SendToServer.MessagePort ,send_P,MessageHandler,SendToServer.UPDATE_PRODUCT).start();
 		    
