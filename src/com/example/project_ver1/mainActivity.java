@@ -9,7 +9,7 @@ import android.widget.Button;
 public class mainActivity extends Activity {
 
 	Button btnUserInfo, btnChatroomList, btnProductUpload, btnStartService,
-			btnQuitService, btnProductManage, btnSearchProduct;
+			btnQuitService, btnProductManage, btnSearchProduct, btnShoppingCart;
 	public static String Account; // ¨Ï¥ÎªÌ±b¤á
 
 	@Override
@@ -25,6 +25,7 @@ public class mainActivity extends Activity {
 		btnQuitService = (Button) this.findViewById(R.id.btnQuitService);
 		btnProductManage = (Button) this.findViewById(R.id.btnProductManage);
 		btnSearchProduct = (Button) this.findViewById(R.id.btnSearchProduct);
+		btnShoppingCart = (Button) this.findViewById(R.id.btnShoppingCart);
 		
 		Intent con = getIntent();
 		Account = con.getStringExtra("Account");
@@ -114,6 +115,16 @@ public class mainActivity extends Activity {
 				// TODO Auto-generated method stub
 				Intent it = new Intent();
 				it.setClass(mainActivity.this, SearchProduct.class);
+				startActivity(it);
+			}});
+		
+		btnShoppingCart.setOnClickListener(new Button.OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Intent it = new Intent();
+				it.setClass(mainActivity.this, ShoppingCart.class);
 				startActivity(it);
 			}});
 		
