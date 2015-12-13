@@ -3,7 +3,7 @@ package com.example.project_ver1;
 import java.io.*;
 
 
-public class FileManager {
+public class FileManager{
 
 	private FileReader reader;
 	private FileWriter writer;
@@ -11,6 +11,7 @@ public class FileManager {
 	private File f;
 	public String savePath;
 	private BufferedReader br;
+	
 	FileManager(String savePath)
 	{	try{
 		this.savePath = savePath;
@@ -23,7 +24,7 @@ public class FileManager {
 		}
 		catch(Exception e)
 		{
-		e.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 	
@@ -94,7 +95,7 @@ public class FileManager {
 		}
 	}
 	
-	public void writeObjec(byte[] buffer) throws IOException
+	public void writeObject(byte[] buffer) throws IOException
 	{
 		try {
 			fos = new FileOutputStream(savePath);
