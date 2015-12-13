@@ -3,6 +3,7 @@ package com.example.project_ver1;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -32,6 +33,8 @@ public class ProductInfo extends Activity {
 	LinearLayout buyerLayout,sellerLayout;
 	
 	String savePath = Environment.getExternalStorageDirectory().getPath()+"/PolarTrade";
+	ArrayList<String> productIds;
+	FileManager save_product;
 	
 	int pid = -1;
 	int sid = -1;
@@ -49,6 +52,9 @@ public class ProductInfo extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_product_info);
+		
+		save_product = new FileManager(savePath + "/SaveProduct.txt");
+		productIds = StringArrayToList(save_product.readAllLine());
 		
 		this.objectInitialize();
 		this.setButtonClick();
@@ -69,6 +75,14 @@ public class ProductInfo extends Activity {
 		ProductName.setText(productName);
 		ProductPrice.setText(String.valueOf(productPrice));
 		ProductDetailInfo.setText(productInfo);
+		
+		//設置購物車狀態
+		if(productIds.contains(""+pid))
+		{
+			btnSaveProduct.setText("移除購物車");
+		}
+		else
+			btnSaveProduct.setText("放入購物車");
 		
 		try {
 			orgUri = Uri.parse(bu.getString("photo"));
@@ -149,9 +163,23 @@ public class ProductInfo extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				FileManager save_product = new FileManager(savePath + "/SaveProduct.dat");
-				save_product.writeLine(""+pid);
-				Toast.makeText(getApplicationContext(), "加入購物車", Toast.LENGTH_SHORT).show();
+				productIds = StringArrayToList(save_product.readAllLine());
+				
+				if(!productIds.contains(""+pid))
+				{
+					save_product.writeLine(""+pid);
+					Toast.makeText(getApplicationContext(), "加入購物車", Toast.LENGTH_SHORT).show();
+					btnSaveProduct.setText("移除購物車");
+				}
+				else
+				{
+					productIds.remove(""+pid);
+					String[] pids = {}; 
+					pids = productIds.toArray(pids);
+					save_product.writeAllLine(pids);
+					Toast.makeText(getApplicationContext(), "移除購物車", Toast.LENGTH_SHORT).show();
+					btnSaveProduct.setText("放入購物車");
+				}
 			}});
 	}
 	
@@ -181,6 +209,16 @@ public class ProductInfo extends Activity {
 			ProductDetailInfo.setText(productInfo);
 		}
 		
+	}
+	
+	public ArrayList<String> StringArrayToList(String[] array)
+	{
+		ArrayList<String> stringList = new ArrayList<String>();
+		for(String line:array)
+		{
+			stringList.add(line);
+		}
+		return stringList;
 	}
 	
 	public static byte[] readStream(InputStream in) throws Exception {
