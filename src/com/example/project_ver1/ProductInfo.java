@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +21,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ProductInfo extends Activity {
 
@@ -28,6 +30,8 @@ public class ProductInfo extends Activity {
 	private ImageView ProductImage;
 	private Button productEditButton, btnChat, btnSaveProduct;
 	LinearLayout buyerLayout,sellerLayout;
+	
+	String savePath = Environment.getExternalStorageDirectory().getPath()+"/PolarTrade";
 	
 	int pid = -1;
 	int sid = -1;
@@ -139,6 +143,15 @@ public class ProductInfo extends Activity {
 				it.putExtra("produceID", pid);
 				it.putExtra("sellerID", sid);
 				startActivity(it);
+			}});
+		
+		btnSaveProduct.setOnClickListener(new Button.OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				FileManager save_product = new FileManager(savePath + "/SaveProduct.dat");
+				save_product.writeLine(""+pid);
+				Toast.makeText(getApplicationContext(), "加入購物車", Toast.LENGTH_SHORT).show();
 			}});
 	}
 	
