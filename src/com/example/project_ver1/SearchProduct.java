@@ -42,12 +42,12 @@ public class SearchProduct extends Activity {
 	private File mpPhoto;
 	private File ProductPhotoDir = new File(
 			Environment.getExternalStorageDirectory() + "/DCIM/ProductPhoto");
+	
 	ArrayList <Product> product_set = new ArrayList <Product>();
 	ArrayList <File> photo_set = new ArrayList <File>();
 	FileOutputStream fos = null;
 	Uri u = null;
-	int [] pid_set;    // 使用者所有商品ID
-	String p_msg = "";  // 傳送 message
+
 	int p_num = 0;  // 總商品數量
 	double[] position;
 	Handler MessageHandler;
