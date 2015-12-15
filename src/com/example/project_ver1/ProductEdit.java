@@ -90,7 +90,7 @@ public class ProductEdit extends Activity {
 			public void handleMessage(Message msg) {
 				switch (msg.what) {
 				
-				case SendToServer.SUCCESS:
+				case SendToServer.UPDATE_MESSAGE_SUCCESS:
 					
 					Toast.makeText(getApplicationContext(),"Product update success", Toast.LENGTH_SHORT).show();
 					
@@ -183,6 +183,7 @@ private void setButtonClick() {
 						Toast.LENGTH_LONG).show();
 				return;
 			}
+
 		}
 	});
 	

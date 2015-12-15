@@ -28,16 +28,21 @@ public class SendToServer extends Thread {
 			UPLOAD_PRODUCT_PHOTO = 1009, GET_USER_PRODUCT = 1010,
 			GET_PRODUCT_INFO = 1011, LIST_CHAT_ROOM = 1012,
 			GET_CHAT_ROOM = 1013, DOWNLOAD_MESSAGE = 1014,
-			UPDATE_MESSAGE = 1015, CHECK_MESSAGE = 1016 , NO_PRODUCTS = 1017, 
+			UPDATE_MESSAGE = 1015, CHECK_MESSAGE = 1016 , NO_PRODUCTS = 1017,
+			UPDATE_PRODUCT = 1018 , DELETE_PRODUCT = 1019, SEARCH_PRODUCT = 1020,
+			GET_LOCATE = 1021, GET_PRODUCT = 1022,
 			SUCCESS = 2001, FAIL = 2002,
 			SERVER_ERROR = 2003, SUCCESS_GET_PHOTO = 2004,
 			SUCCESS_GET_USERINFO = 2005, SUCCESS_GET_CHAT_LIST = 2006,
 			SUCCESS_GET_PID = 2007, SUCCESS_GET_PRODUCTINFO = 2008,
 			SUCCESS_UPLOAD_PHOTO = 2009, GET_NEW_MESSAGE = 2010,
-			NO_MESSAGE = 2011 , UPDATE_PRODUCT = 2012 , DELETE_PRODUCT = 2013 , DELETE_SUCCESS = 2014,  DELETE_FAIL = 2015;
+			NO_MESSAGE = 2011 , DELETE_SUCCESS = 2012 , DELETE_FAIL = 2013, 
+			GET_SEARCH_RESULT = 2014, NO_SEARCH_RESULT = 2015,
+			GET_LOCATE_SUCCESS = 2016, GET_LOCATE_FAIL = 2017,
+			UPDATE_MESSAGE_SUCCESS = 2018;
 	
-	String address = "140.118.125.229"; // Server的address
-	//String address = "192.168.0.102";
+//	String address = "140.118.125.229"; // Server的address
+	String address = "192.168.0.102";
 	int Port; // server監聽的port
 	Socket client;
 	InetSocketAddress isa;
@@ -163,7 +168,19 @@ public class SendToServer extends Thread {
 				} else
 					return_msg.what = FAIL;
 				break;
-
+			case GET_LOCATE:
+				pw.println(msg);
+				if (br.readLine().equals("success")) {
+					double lat = Double.parseDouble(br.readLine());
+					double lng = Double.parseDouble(br.readLine());
+					double[] position = {lat, lng};
+					return_msg.what = GET_LOCATE_SUCCESS;
+					return_msg.obj = position;
+					
+				} else {
+					return_msg.what = GET_LOCATE_FAIL;
+				}
+				break;
 			case UPLOAD_LOCATE:
 
 				pw.println(msg);
@@ -306,8 +323,7 @@ public class SendToServer extends Thread {
 				
 				if(br.readLine().equals("success"))
 				{
-					return_msg.what = SUCCESS;
-					return_msg.what = UPDATE_MESSAGE;
+					return_msg.what = UPDATE_MESSAGE_SUCCESS;
 				}
 				else
 				{
@@ -349,6 +365,39 @@ public class SendToServer extends Thread {
 				}
 				break;
 			
+			case SEARCH_PRODUCT:
+				pw.println(msg.toString());
+				String Server_msg = br.readLine();
+				if(Server_msg.equals("success"))
+				{
+					ObjectInputStream ois = new ObjectInputStream(
+							client.getInputStream());
+					return_msg.what = GET_SEARCH_RESULT;
+					return_msg.obj = ois.readObject().toString();
+				}
+				else if (Server_msg.equals("no result"))
+				{
+					return_msg.what = NO_SEARCH_RESULT;
+				}
+				else
+				{
+					return_msg.what = FAIL;
+				}
+				break;
+				
+			case GET_PRODUCT:
+				pw.println(msg);
+				if (br.readLine().equals("success")) {
+					ObjectInputStream ois = new ObjectInputStream(
+							client.getInputStream());
+					byte [] temp = (byte[])ois.readObject();
+					return_msg.obj = temp;
+					return_msg.what = SUCCESS;
+					ois.close();
+				} else{
+					return_msg.what = FAIL;
+				}
+				break;
 			}
 
 			pw.close(); // 等到command結束後執行關閉動作

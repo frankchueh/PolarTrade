@@ -83,6 +83,8 @@
         <activity android:name="Chatroom"></activity>
         
         <service android:name="ChatRoomNoti"></service>
+        <activity android:name="SearchProduct"></activity>
+        <activity android:name="ShoppingCart"></activity>
     </application>
 
 </manifest>

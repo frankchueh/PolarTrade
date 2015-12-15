@@ -20,6 +20,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -31,74 +33,67 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 
-public class ProductManage extends Activity {
+public class ShoppingCart extends Activity {
 	
-	private ListView productView;
+	private ListView resultView;
 	ProductAdapter productAdapter;
+	Button btnSearch;
+	
 	private File mpPhoto;
 	private File ProductPhotoDir = new File(
 			Environment.getExternalStorageDirectory() + "/DCIM/ProductPhoto");
+	
+	String savePath = Environment.getExternalStorageDirectory().getPath()+"/PolarTrade";
+	FileManager save_product;
+	
 	ArrayList <Product> product_set = new ArrayList <Product>();
 	ArrayList <File> photo_set = new ArrayList <File>();
 	FileOutputStream fos = null;
 	Uri u = null;
-	int [] pid_set;    // 使用者所有商品ID
-	String p_msg = "";  // 傳送 message
-	int p_num = 0;  // 總商品數量
-	public static final int UPDATE_SUCCESS = 7001 , UPDATE_CANCEL = 7002;
+
+	double[] position;
 	Handler MessageHandler;
-	
+	String command;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_product_manage);
-		
-		productView = (ListView)findViewById(R.id.productlistview);
-						
-		MessageHandler = new Handler() {
+		setContentView(R.layout.activity_shopping_cart);
+		resultView = (ListView)findViewById(R.id.resultListView);
+		save_product = new FileManager(savePath + "/SaveProduct.txt");
 
+		MessageHandler = new Handler() {
 			public void handleMessage(Message msg) {
 				switch (msg.what) {
-				case SendToServer.SUCCESS_GET_PID:     // 成功取得使用者所有 pids
-					byte[] temp_p = (byte[]) msg.obj;
-					product_set = (ArrayList<Product>) SerializationUtils.deserialize(temp_p);
-//					product_set = (ArrayList<Product>) msg.obj;
-					Toast.makeText(getApplicationContext(), "Products download success", Toast.LENGTH_SHORT).show();
-					setListView();	// 設置畫面
+				case SendToServer.SUCCESS:
+					product_set = (ArrayList<Product>) SerializationUtils.deserialize((byte[])msg.obj);
+					setListView();
+					rewriteShoppingCart();
+					Toast.makeText(getApplicationContext(), "Get Product Success", Toast.LENGTH_SHORT).show();
 					break;
-				
-				case SendToServer.NO_PRODUCTS:
-					Toast.makeText(getApplicationContext(), "No product exist", Toast.LENGTH_SHORT).show();
-					break;
-					
 				case SendToServer.FAIL:
-					Toast.makeText(getApplicationContext(),"Product download failed", Toast.LENGTH_SHORT).show();
-					
+					Toast.makeText(getApplicationContext(), "Search product failed", Toast.LENGTH_SHORT).show();
 					break;
-				
-				case SendToServer.DELETE_SUCCESS:
-					int deleted_position = (int) msg.obj;
-					product_set.remove(deleted_position);
-					productAdapter.notifyDataSetChanged();
-					Toast.makeText(getApplicationContext(),"Product delete success", Toast.LENGTH_SHORT).show();
-					break;
-				case SendToServer.DELETE_FAIL:
-					Toast.makeText(getApplicationContext(),"Product delete failed", Toast.LENGTH_SHORT).show();
 				}
 				super.handleMessage(msg);
 			}
 		};
-		// 送出商品下載 thread
-		p_msg = "getUserProduct" + "\n" + mainActivity.Account;
-		new SendToServer(SendToServer.MessagePort, p_msg, MessageHandler, 
-				SendToServer.GET_USER_PRODUCT).start();	
+		
+	}
+	
+	private void rewriteShoppingCart()	//刪除搜尋不到的商品
+	{	
+		String[] pid_new = new String[product_set.size()];
+		for (int i = 0; i < product_set.size(); i++)
+		{
+			pid_new[i] = "" + product_set.get(i).productID;
+		}
 	}
 	
 	protected void setListView() {
 		
 		productAdapter = new ProductAdapter(this);
-		productView.setAdapter(productAdapter);
-		productView.setOnItemClickListener(new ListView.OnItemClickListener() {
+		resultView.setAdapter(productAdapter);
+		resultView.setOnItemClickListener(new ListView.OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
@@ -116,56 +111,48 @@ public class ProductManage extends Activity {
 				}
 				bm.recycle();
 				u = Uri.fromFile(pfile);
-				bu.putString("user", "seller");
+				
+				bu.putString("user", "buyer");
 				bu.putInt("id", product_set.get(position).productID);
 				bu.putString("name",product_set.get(position).productName);  // 傳遞商品名稱
 				bu.putInt("price",product_set.get(position).productPrice);   // 商品價格
 				bu.putByteArray("info", product_set.get(position).productInfo);  // 商品資訊
 				bu.putString("photo",u.toString());   // 商品圖片超連結
+				bu.putInt("sellerID", product_set.get(position).userID);
 				
 				it.putExtras(bu);
-				it.setClass(ProductManage.this,ProductInfo.class);
+				it.setClass(ShoppingCart.this, ProductInfo.class);
 				startActivityForResult(it , position);	
 			}
 		});		
 	}
 	
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
-
-		if(resultCode == UPDATE_SUCCESS) {
-			Bundle bu = data.getExtras();
-			product_set.get(requestCode).productName = bu.getString("name");
-			product_set.get(requestCode).productPrice = bu.getInt("price");
-			product_set.get(requestCode).productInfo = bu.getByteArray("info");
-			try {
-				Uri orgUri = Uri.parse(bu.getString("photo"));
-				ContentResolver contentResolver = getContentResolver();
-				product_set.get(requestCode).productPhoto = readStream(contentResolver.openInputStream(orgUri));
-				productAdapter.notifyDataSetChanged();
-				} catch(Exception e) {
-						e.printStackTrace();
-				}
-		}
-		else if(resultCode == UPDATE_CANCEL) {
-			
-		}
-	}
-	
 	static class ViewHolder {
-		
 		public TextView productName;
 		public TextView productPrice;
 		public ImageView productPhoto;
-		public Button deleteProduct;
 	}
 	
-	public class ProductAdapter extends BaseAdapter {
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		String[] pids = save_product.readAllLine();
+		command = "getProduct\n";
+		for(String pid:pids)
+		{
+			command += pid + ",";
+		}
+		
+		new SendToServer(SendToServer.MessagePort, command,
+				MessageHandler, SendToServer.GET_PRODUCT).start();
+	}
+
+	class ProductAdapter extends BaseAdapter {
 
 		LayoutInflater myInflater;
 
-		public ProductAdapter(ProductManage listViewActivity) {
+		public ProductAdapter(ShoppingCart listViewActivity) {
 			myInflater = LayoutInflater.from(listViewActivity);
 		}
 
@@ -197,12 +184,11 @@ public class ProductManage extends Activity {
 			if(convertView == null) {
 				
 				pViewHolder = new ViewHolder(); 
-				convertView = myInflater.inflate(R.layout.productitem,parent,false);
+				convertView = myInflater.inflate(R.layout.product_result,null);
 				pViewHolder.productPhoto = (ImageView) convertView.findViewById(R.id.productPhoto);
 				pViewHolder.productName = (TextView) convertView.findViewById(R.id.productName);
 				pViewHolder.productPrice = (TextView) convertView.findViewById(R.id.productPrice);
-				pViewHolder.deleteProduct = (Button) convertView.findViewById(R.id.deletedProduct);
-				
+							
 				DisplayMetrics dm = new DisplayMetrics();
 				getWindowManager().getDefaultDisplay().getMetrics(dm);
 				int t_width = dm.widthPixels/3;
@@ -210,30 +196,17 @@ public class ProductManage extends Activity {
 				pViewHolder.productPhoto.setMinimumHeight(t_height);
 				pViewHolder.productPhoto.setMinimumWidth(t_width);
 				
-				pViewHolder.deleteProduct.setOnClickListener(new Button.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						int p = (Integer) v.getTag();
-						p_msg = "deleteProduct" + "\n" + product_set.get(p).productID;
-						new SendToServer(SendToServer.MessagePort, p_msg, MessageHandler, 
-								SendToServer.DELETE_PRODUCT).start();	
-					}
-				});
-				
 				convertView.setTag(pViewHolder);
-			}
-			else {
-				pViewHolder = (ViewHolder) convertView.getTag();
 			}
 			
 			// fill data
+			ViewHolder vi = (ViewHolder) convertView.getTag();
 			byte [] pPhoto = product_set.get(position).productPhoto;
 			Bitmap bm = BitmapFactory.decodeByteArray(pPhoto, 0,
 					pPhoto.length, null);
-			pViewHolder.productPhoto.setImageBitmap(getResizedBitmap(bm,100,100));
-			pViewHolder.productName.setText(product_set.get(position).productName);
-			pViewHolder.productPrice.setText(String.valueOf(product_set.get(position).productPrice));
-			pViewHolder.deleteProduct.setTag(position);
+			vi.productPhoto.setImageBitmap(getResizedBitmap(bm,100,100));
+			vi.productName.setText(product_set.get(position).productName);
+			vi.productPrice.setText(String.valueOf(product_set.get(position).productPrice));
 			
 			return convertView;
 		}
@@ -283,6 +256,16 @@ public class ProductManage extends Activity {
 		outStream.close();
 		in.close();
 		return data;
+	}
+	
+	public ArrayList<String> StringArrayToList(String[] array)
+	{
+		ArrayList<String> stringList = new ArrayList<String>();
+		for(String line:array)
+		{
+			stringList.add(line);
+		}
+		return stringList;
 	}
 	
 }
