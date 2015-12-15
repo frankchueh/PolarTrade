@@ -34,7 +34,7 @@ public class SendToServer extends Thread {
 			SUCCESS_GET_USERINFO = 2005, SUCCESS_GET_CHAT_LIST = 2006,
 			SUCCESS_GET_PID = 2007, SUCCESS_GET_PRODUCTINFO = 2008,
 			SUCCESS_UPLOAD_PHOTO = 2009, GET_NEW_MESSAGE = 2010,
-			NO_MESSAGE = 2011 , UPDATE_PRODUCT = 2012 , DELETE_PRODUCT = 2013 , DELETE_FAIL = 2014;
+			NO_MESSAGE = 2011 , UPDATE_PRODUCT = 2012 , DELETE_PRODUCT = 2013 , DELETE_SUCCESS = 2014,  DELETE_FAIL = 2015;
 	
 	String address = "140.118.125.229"; // Serverªºaddress
 	//String address = "192.168.0.102";
@@ -264,7 +264,8 @@ public class SendToServer extends Thread {
 				pw.println(msg.toString()); 
 				
 				if(br.readLine().equals("success")) {
-					return_msg.what = SUCCESS;
+					return_msg.obj = br.readLine();
+					return_msg.what = DELETE_SUCCESS;
 				} else {
 					return_msg.what = DELETE_FAIL;
 				}
@@ -305,6 +306,7 @@ public class SendToServer extends Thread {
 				
 				if(br.readLine().equals("success"))
 				{
+					return_msg.what = SUCCESS;
 					return_msg.what = UPDATE_MESSAGE;
 				}
 				else

@@ -1,16 +1,8 @@
 package com.example.project_ver1;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.lang.String;
@@ -26,8 +18,6 @@ import android.graphics.Bitmap.CompressFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import android.os.Handler;
 import android.os.Message;
@@ -45,7 +35,7 @@ public class OnShelf extends Activity {
 	private EditText editProductName , editProductPrice , editProductInfo;
 	private ImageView productImage;
 	// 商品相關變數字串宣告
-	String productName , productPrice , productInfo;
+	String productName = "" , productPrice = "" , productInfo = "";
 	// 商品圖片相關變數宣告
 	private Bitmap myBitmap;
 	private File mPhoto;
@@ -74,6 +64,7 @@ public class OnShelf extends Activity {
 				switch (msg.what) {
 				case SendToServer.SUCCESS:
 					Toast.makeText(getApplicationContext(), "Product upload success", Toast.LENGTH_SHORT).show();
+					finish(); // 結束 activity
 					break;
 				case SendToServer.FAIL:
 					Toast.makeText(getApplicationContext(), "Product upload failed", Toast.LENGTH_SHORT).show();
@@ -104,50 +95,50 @@ public class OnShelf extends Activity {
 			@Override
 			public void onClick(View v) {
 				
-				if(!editProductName.getText().toString().equals("")) {
-					productName = editProductName.getText().toString();
+				if(!editProductName.getText().toString().equals("")) {	// 若 product 名稱欄位不為空
 					
-					if(!editProductName.getText().toString().equals("")) {
-						productPrice = editProductPrice.getText().toString();
+					if(CheckInput(editProductPrice.getText().toString())) {		// 若 product 金額輸入正確
 						
-						if(!CheckInput(productPrice)) {
-							Toast.makeText(getApplicationContext(),
-									"請輸入正確數字金額 (由 0 ~ 9 組成 )", Toast.LENGTH_LONG)
-									.show();
-							return;
+						if(mContent != null) {		// 若 沒有選擇 product 照片
+							String msg = "";
+							// 要傳送的商品上傳訊息 ( command + name + price + account )
+							msg += "InsertProduct" + "\n" +			
+									editProductName.getText().toString() + "\n" +
+									editProductPrice.getText().toString() +"\n" +
+									mainActivity.Account;
+							
+							// 商品詳細訊息分成另一個 String
+							String info_msg = editProductInfo.getText().toString();
+							
+							// 要傳送給 Server 的訊息 
+							String [] msg_set = { msg , info_msg };  // 包含 ( productName + productPrice ) + (productInfo)
+							
+							// 分別傳送訊息和圖片上傳 -> 兩個 thread
+							new SendToServer(SendToServer.MessagePort ,msg_set,MessageHandler,SendToServer.UPLOAD_PRODUCT).start();
+							new SendToServer(SendToServer.PhotoPort ,mContent,MessageHandler,SendToServer.UPLOAD_PRODUCT_PHOTO).start();
+							
+							Toast.makeText(getApplicationContext(),"done upload",
+									Toast.LENGTH_LONG).show();
+						}
+						else {
+							Toast.makeText(getApplicationContext(), "請指定商品照片",
+									Toast.LENGTH_LONG).show();
+									return;
 						}
 						
-						if(!editProductInfo.getText().toString().equals("")) {
-							productInfo = editProductInfo.getText().toString();
-						}
-						
-					}
+			        }
 					else {
-						Toast.makeText(getApplicationContext(), "請輸入商品金額",
-								Toast.LENGTH_LONG).show();
+						Toast.makeText(getApplicationContext(), "請輸入正確數字金額",
+						Toast.LENGTH_LONG).show();
 						return;
 					}
-				}
+				}		
 				else {
 					Toast.makeText(getApplicationContext(), "請輸入商品名稱",
 							Toast.LENGTH_LONG).show();
 					return;
 				}
-				
-				String msg = "";
-				msg += "InsertProduct\n" + productName + "\n"
-						+ productPrice +"\n"
-						+ mainActivity.Account;
-				String info_msg = productInfo;
-				
-				String [] msg_set = { msg , info_msg };  // 包含 ( productName + productPrice ) + (productInfo)
-				
-			    new SendToServer(SendToServer.MessagePort ,msg_set,MessageHandler,SendToServer.UPLOAD_PRODUCT).start();
-			    new SendToServer(SendToServer.PhotoPort ,mContent,MessageHandler,SendToServer.UPLOAD_PRODUCT_PHOTO).start();
-			    
-				Toast.makeText(getApplicationContext(),"done upload",
-						Toast.LENGTH_LONG).show();
-				finish();
+	
 			}
 		});
 		
@@ -312,14 +303,18 @@ public class OnShelf extends Activity {
 	}
 
 	public boolean CheckInput(String input) {
-		char[] check = input.toCharArray();
-
-		for (int i = 0; i < check.length; i++) {
-			if (!(check[i] >= '0' && check[i] <= '9'))
-				return false;
+		
+		if(input == "") {
+			return false;
 		}
+		else {
+			char[] check = input.toCharArray();
+
+			for (int i = 0; i < check.length; i++) {
+				if (!(check[i] >= '0' && check[i] <= '9'))
+					return false;
+			}
 		return true;
+		}
 	}
-	
-	
 }

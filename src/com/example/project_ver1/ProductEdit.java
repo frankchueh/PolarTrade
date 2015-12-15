@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 import org.apache.commons.lang.SerializationUtils;
@@ -25,8 +24,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -45,7 +42,6 @@ public class ProductEdit extends Activity {
 	private Bitmap myBitmap;
 	private File mPhoto;
 	String pinfo = "";
-	private String p_msg;
 	private File CropPhotoDir = new File(
 			Environment.getExternalStorageDirectory() + "/DCIM/CropPhoto");
 	private File TakePhotoDir = new File(
@@ -58,7 +54,7 @@ public class ProductEdit extends Activity {
 	private final int PICTURE_AFTER_CROP = 1002;
 	private byte[] mContent = null;  // 用於儲存商品照片資料 (byte) -> 用於傳輸
 	// MessageHandler 宣告
-	Handler MessageHandler;
+	static Handler MessageHandler;
 	FileOutputStream fos = null;
 	Product updated_product = null;
 
@@ -67,18 +63,18 @@ public class ProductEdit extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_product_edit);
 		
-		this.objectInitialize();
-		Intent call_it = getIntent();
+		this.objectInitialize();	// 畫面初始化設定
+		Intent call_it = getIntent();	 // 取得上個 Activity傳過來的資料
 		Bundle bu = call_it.getExtras();
-		this.setButtonClick();
+		this.setButtonClick();		// 按鈕事件設定
 		
-		pid = bu.getInt("id");
+		pid = bu.getInt("id");		// 從 Bundle 取得詳細資料 -> ( id , name , price , info ) 並顯示出來
 		editProductName.setText(bu.getString("name"));
 		editProductPrice.setText(String.valueOf(bu.getInt("price")));
 		pinfo = new String(bu.getByteArray("info"),Charset.forName("UTF-8"));
 		editProductInfo.setText(pinfo);
 		
-		try {
+		try {		// 根據 uri 去讀取內部儲存讀出照片資料 並顯示出來
 		orgUri = Uri.parse(bu.getString("photo"));
 		ContentResolver contentResolver = getContentResolver();
 		mContent = readStream(contentResolver.openInputStream(orgUri));
@@ -94,9 +90,40 @@ public class ProductEdit extends Activity {
 			public void handleMessage(Message msg) {
 				switch (msg.what) {
 				
+				case SendToServer.SUCCESS:
+					
+					Toast.makeText(getApplicationContext(),"Product update success", Toast.LENGTH_SHORT).show();
+					
+					Intent it = new Intent();							// 使用 intent 將更新資訊回傳 ProductManage
+					Bundle bu = new Bundle();
+					bu.putString("name", editProductName.getText().toString());	// 新名字
+					bu.putInt("price", Integer.parseInt(editProductPrice.getText().toString())); 	// 新價格
+					bu.putByteArray("info",editProductInfo.getText().toString().getBytes());		// 新商品資訊
+					
+					String localTempImgFileName = String.valueOf(pid) + ".jpg";		// 照片更新
+					ProductPhotoDir.mkdirs();
+					mPhoto = new File(ProductPhotoDir,localTempImgFileName);
+					Uri uri2 = Uri.fromFile(mPhoto);					// 新照片 Url
+					
+					Bitmap bm = BitmapFactory.decodeByteArray(mContent, 0,
+							mContent.length, null);
+			
+					try {
+						fos = new FileOutputStream(mPhoto);				// 儲存照片
+						bm.compress(Bitmap.CompressFormat.JPEG,80,fos);
+						fos.close();
+					}catch(Exception e) {
+						e.printStackTrace();
+					}
+					
+					bu.putString("photo", uri2.toString());
+					it.putExtras(bu);
+					setResult(ProductManage.UPDATE_SUCCESS , it);
+					finish();
+					
 				case SendToServer.FAIL:
 					
-					Toast.makeText(getApplicationContext(),"Product info download failed", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(),"Product update failed", Toast.LENGTH_SHORT).show();
 				}
 				super.handleMessage(msg);
 			}
@@ -124,71 +151,38 @@ private void setButtonClick() {
 		@Override
 		public void onClick(View v) {
 			
-			if(!editProductName.getText().toString().equals("")) {
-				productName = editProductName.getText().toString();
+			if(!editProductName.getText().toString().equals("")) {	// 若 product 名稱欄位不為空
 				
-				if(!editProductName.getText().toString().equals("")) {
-					productPrice = editProductPrice.getText().toString();
+				if(CheckInput(editProductPrice.getText().toString())) {		// 若 product 金額輸入正確
 					
-					if(!CheckInput(productPrice)) {
-						Toast.makeText(getApplicationContext(),
-								"請輸入正確數字金額 (由 0 ~ 9 組成 )", Toast.LENGTH_LONG)
-								.show();
-						return;
+					if(mContent != null) {		// 若 沒有選擇 product 照片
+						
+						// 更新商品資料並上傳
+						updated_product = new Product(pid , editProductName.getText().toString() , Integer.parseInt(editProductPrice.getText().toString()) , editProductInfo.getText().toString().getBytes() , mContent);
+						byte[] send_P = SerializationUtils.serialize(updated_product);
+					    new SendToServer(SendToServer.MessagePort ,send_P,MessageHandler,SendToServer.UPDATE_PRODUCT).start();
+					    
+						Toast.makeText(getApplicationContext(),"done update",
+								Toast.LENGTH_LONG).show();
+					}
+					else {
+						Toast.makeText(getApplicationContext(), "請指定商品照片",
+								Toast.LENGTH_LONG).show();
+								return;
 					}
 					
-					if(!editProductInfo.getText().toString().equals("")) {
-						productInfo = editProductInfo.getText().toString();
-					}
-					
-				}
+		        }
 				else {
-					Toast.makeText(getApplicationContext(), "請輸入商品金額",
-							Toast.LENGTH_LONG).show();
+					Toast.makeText(getApplicationContext(), "請輸入正確數字金額",
+					Toast.LENGTH_LONG).show();
 					return;
 				}
-			}
+			}		
 			else {
 				Toast.makeText(getApplicationContext(), "請輸入商品名稱",
 						Toast.LENGTH_LONG).show();
 				return;
 			}
-		
-			String info_msg = productInfo;
-			
-			updated_product = new Product(pid , productName , Integer.parseInt(productPrice) , info_msg.getBytes() , mContent);
-			byte[] send_P = SerializationUtils.serialize(updated_product);
-		    new SendToServer(SendToServer.MessagePort ,send_P,MessageHandler,SendToServer.UPDATE_PRODUCT).start();
-		    
-			Toast.makeText(getApplicationContext(),"done update",
-					Toast.LENGTH_LONG).show();
-			
-			Intent it = new Intent();							// 使用 intent 將更新資訊回傳 ProductManage
-			Bundle bu = new Bundle();
-			bu.putString("name", productName);					// 新名字
-			bu.putInt("price", Integer.parseInt(productPrice)); // 新價格
-			bu.putByteArray("info",info_msg.getBytes());		// 新商品資訊
-			
-			String localTempImgFileName = String.valueOf(pid) + ".jpg";		// 照片更新
-			ProductPhotoDir.mkdirs();
-			mPhoto = new File(ProductPhotoDir,localTempImgFileName);
-			Uri uri2 = Uri.fromFile(mPhoto);					// 新照片 Url
-			
-			Bitmap bm = BitmapFactory.decodeByteArray(mContent, 0,
-					mContent.length, null);
-	
-			try {
-				fos = new FileOutputStream(mPhoto);				// 儲存照片
-				bm.compress(Bitmap.CompressFormat.JPEG,80,fos);
-				fos.close();
-			}catch(Exception e) {
-				e.printStackTrace();
-			}
-			
-			bu.putString("photo", uri2.toString());
-			it.putExtras(bu);
-			setResult(ProductManage.UPDATE_SUCCESS , it);
-			finish();
 		}
 	});
 	
@@ -353,12 +347,18 @@ public static byte[] readStream(InputStream in) throws Exception {
 }
 
 public boolean CheckInput(String input) {
-	char[] check = input.toCharArray();
-
-	for (int i = 0; i < check.length; i++) {
-		if (!(check[i] >= '0' && check[i] <= '9'))
-			return false;
+	
+	if(input == "") {
+		return false;
 	}
+	else {
+		char[] check = input.toCharArray();
+
+		for (int i = 0; i < check.length; i++) {
+			if (!(check[i] >= '0' && check[i] <= '9'))
+				return false;
+		}
 	return true;
+	}
 }
 }
