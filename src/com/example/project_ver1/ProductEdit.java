@@ -158,7 +158,7 @@ private void setButtonClick() {
 					if(mContent != null) {		// 若 沒有選擇 product 照片
 						
 						// 更新商品資料並上傳
-						updated_product = new Product(pid , editProductName.getText().toString() , Integer.parseInt(editProductPrice.getText().toString()) , editProductInfo.getText().toString().getBytes() , mContent);
+						updated_product = new Product(pid , editProductName.getText().toString() , Integer.parseInt(editProductPrice.getText().toString()) , editProductInfo.getText().toString().getBytes() , mContent , -1);
 						byte[] send_P = SerializationUtils.serialize(updated_product);
 					    new SendToServer(SendToServer.MessagePort ,send_P,MessageHandler,SendToServer.UPDATE_PRODUCT).start();
 					    
