@@ -316,7 +316,7 @@ public class UserinfoManager extends Activity {
 				//壓縮照片
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				myBitmap.compress(CompressFormat.JPEG, 80, bos);
-				mPhoto = bos.toByteArray();
+
 				//把得到的圖片绑定在控件上顯示
 				imgUIMPhoto.setImageBitmap(myBitmap);
 			} catch (Exception e) {

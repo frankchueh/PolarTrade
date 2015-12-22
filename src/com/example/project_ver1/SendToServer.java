@@ -281,11 +281,13 @@ public class SendToServer extends Thread {
 				pw.println(msg.toString()); 
 				
 				if(br.readLine().equals("success")) {
-					return_msg.obj = br.readLine();
+					String sp = br.readLine();
+					return_msg.obj = sp;
 					return_msg.what = DELETE_SUCCESS;
 				} else {
 					return_msg.what = DELETE_FAIL;
 				}
+				break;
 				
 			case LIST_CHAT_ROOM:
 				pw.println(msg.toString()); // ListChatRoom +\n+ UserAccount

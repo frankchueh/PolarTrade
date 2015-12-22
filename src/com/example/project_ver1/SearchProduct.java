@@ -202,17 +202,25 @@ public class SearchProduct extends Activity {
 				pViewHolder.productPhoto.setMinimumHeight(t_height);
 				pViewHolder.productPhoto.setMinimumWidth(t_width);
 				
+				byte [] pPhoto = product_set.get(position).productPhoto;
+				Bitmap bm = BitmapFactory.decodeByteArray(pPhoto, 0,
+						pPhoto.length, null);
+				pViewHolder.productPhoto.setImageBitmap(getResizedBitmap(bm,100,100));
+				pViewHolder.productName.setText(product_set.get(position).productName);
+				pViewHolder.productPrice.setText(String.valueOf(product_set.get(position).productPrice));
+				
 				convertView.setTag(pViewHolder);
 			}
 			
 			// fill data
-			ViewHolder vi = (ViewHolder) convertView.getTag();
+			/*ViewHolder vi = (ViewHolder) convertView.getTag();
 			byte [] pPhoto = product_set.get(position).productPhoto;
 			Bitmap bm = BitmapFactory.decodeByteArray(pPhoto, 0,
 					pPhoto.length, null);
 			vi.productPhoto.setImageBitmap(getResizedBitmap(bm,100,100));
+
 			vi.productName.setText(product_set.get(position).productName);
-			vi.productPrice.setText(String.valueOf(product_set.get(position).productPrice));
+			vi.productPrice.setText(String.valueOf(product_set.get(position).productPrice));*/
 			
 			return convertView;
 		}
