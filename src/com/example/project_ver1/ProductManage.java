@@ -77,7 +77,7 @@ public class ProductManage extends Activity {
 					break;
 				
 				case SendToServer.DELETE_SUCCESS:
-					int deleted_position = (int) msg.obj;
+					int deleted_position = (Integer) msg.obj;
 					product_set.remove(deleted_position);
 					productAdapter.notifyDataSetChanged();
 					Toast.makeText(getApplicationContext(),"Product delete success", Toast.LENGTH_SHORT).show();
