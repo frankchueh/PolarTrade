@@ -77,7 +77,7 @@ public class ProductManage extends Activity {
 					break;
 				
 				case SendToServer.DELETE_SUCCESS:
-					int deleted_position = (int) msg.obj;
+					int deleted_position = Integer.valueOf(String.valueOf(msg.obj));
 					product_set.remove(deleted_position);
 					productAdapter.notifyDataSetChanged();
 					Toast.makeText(getApplicationContext(),"Product delete success", Toast.LENGTH_SHORT).show();
@@ -214,7 +214,7 @@ public class ProductManage extends Activity {
 					@Override
 					public void onClick(View v) {
 						int p = (Integer) v.getTag();
-						p_msg = "deleteProduct" + "\n" + product_set.get(p).productID;
+						p_msg = "deleteProduct" + "\n" + p + "\n" + product_set.get(p).productID;
 						new SendToServer(SendToServer.MessagePort, p_msg, MessageHandler, 
 								SendToServer.DELETE_PRODUCT).start();	
 					}
