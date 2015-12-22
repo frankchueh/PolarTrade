@@ -96,9 +96,10 @@ public class OnShelf extends Activity {
 			public void onClick(View v) {
 				
 				if(!editProductName.getText().toString().equals("")) {	// 若 product 名稱欄位不為空
-					
-					if(CheckInput(editProductPrice.getText().toString())) {		// 若 product 金額輸入正確
-						
+		
+				  if(!editProductPrice.getText().toString().equals("")) {
+					String pPrice = editProductPrice.getText().toString();
+					if(CheckInput(pPrice)) {		// 若 product 金額輸入正確
 						if(mContent != null) {		// 若 沒有選擇 product 照片
 							String msg = "";
 							// 要傳送的商品上傳訊息 ( command + name + price + account )
@@ -125,10 +126,15 @@ public class OnShelf extends Activity {
 									Toast.LENGTH_LONG).show();
 									return;
 						}
-						
+					  }
+					  else {
+					    Toast.makeText(getApplicationContext(), "請輸入正確數字金額",
+						Toast.LENGTH_LONG).show();
+						return;
+					  }
 			        }
 					else {
-						Toast.makeText(getApplicationContext(), "請輸入正確數字金額",
+						Toast.makeText(getApplicationContext(), "請輸入數字金額",
 						Toast.LENGTH_LONG).show();
 						return;
 					}
@@ -304,17 +310,12 @@ public class OnShelf extends Activity {
 
 	public boolean CheckInput(String input) {
 		
-		if(input == "") {
-			return false;
-		}
-		else {
-			char[] check = input.toCharArray();
+	  char[] check = input.toCharArray();
 
-			for (int i = 0; i < check.length; i++) {
-				if (!(check[i] >= '0' && check[i] <= '9'))
-					return false;
-			}
-		return true;
-		}
+	  for (int i = 0; i < check.length; i++) {
+	    if (!(check[i] >= '0' && check[i] <= '9'))
+		  return false;
+	  }
+	  return true;	
 	}
 }

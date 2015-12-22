@@ -41,8 +41,8 @@ public class SendToServer extends Thread {
 			GET_LOCATE_SUCCESS = 2016, GET_LOCATE_FAIL = 2017,
 			UPDATE_MESSAGE_SUCCESS = 2018;
 	
-//	String address = "140.118.125.229"; // Server的address
-	String address = "192.168.0.102";
+	String address = "140.118.125.229"; // Server的address
+//	String address = "192.168.0.102";
 	int Port; // server監聽的port
 	Socket client;
 	InetSocketAddress isa;
