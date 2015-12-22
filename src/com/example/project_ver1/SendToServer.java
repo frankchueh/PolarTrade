@@ -36,13 +36,13 @@ public class SendToServer extends Thread {
 			SUCCESS_GET_USERINFO = 2005, SUCCESS_GET_CHAT_LIST = 2006,
 			SUCCESS_GET_PID = 2007, SUCCESS_GET_PRODUCTINFO = 2008,
 			SUCCESS_UPLOAD_PHOTO = 2009, GET_NEW_MESSAGE = 2010,
-			NO_MESSAGE = 2011 , DELETE_FAIL = 2012, 
-			GET_SEARCH_RESULT = 2013, NO_SEARCH_RESULT = 2014,
-			GET_LOCATE_SUCCESS = 2015, GET_LOCATE_FAIL = 2016,
-			UPDATE_MESSAGE_SUCCESS = 2017;
+			NO_MESSAGE = 2011 , DELETE_SUCCESS = 2012 , DELETE_FAIL = 2013, 
+			GET_SEARCH_RESULT = 2014, NO_SEARCH_RESULT = 2015,
+			GET_LOCATE_SUCCESS = 2016, GET_LOCATE_FAIL = 2017,
+			UPDATE_MESSAGE_SUCCESS = 2018;
 	
-//	String address = "140.118.125.229"; // Server的address
-	String address = "192.168.0.102";
+	String address = "140.118.125.229"; // Server的address
+//	String address = "192.168.0.102";
 	int Port; // server監聽的port
 	Socket client;
 	InetSocketAddress isa;
@@ -281,7 +281,8 @@ public class SendToServer extends Thread {
 				pw.println(msg.toString()); 
 				
 				if(br.readLine().equals("success")) {
-					return_msg.what = SUCCESS;
+					return_msg.obj = br.readLine();
+					return_msg.what = DELETE_SUCCESS;
 				} else {
 					return_msg.what = DELETE_FAIL;
 				}

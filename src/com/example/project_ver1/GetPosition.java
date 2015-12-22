@@ -8,13 +8,6 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-
 import android.location.Location;
 import android.app.Service;
 import android.os.Bundle;
@@ -97,7 +90,6 @@ public class GetPosition extends Service implements ConnectionCallbacks,
 	@Override 
 	public int onStartCommand(Intent intent , int flags , int startId) {
 		
-		String action = intent.getAction();
 		mGoogleApiClient.connect();
 		user_Account = intent.getExtras().getString("Account");
 

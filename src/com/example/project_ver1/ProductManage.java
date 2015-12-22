@@ -76,6 +76,12 @@ public class ProductManage extends Activity {
 					
 					break;
 				
+				case SendToServer.DELETE_SUCCESS:
+					int deleted_position = (int) msg.obj;
+					product_set.remove(deleted_position);
+					productAdapter.notifyDataSetChanged();
+					Toast.makeText(getApplicationContext(),"Product delete success", Toast.LENGTH_SHORT).show();
+					break;
 				case SendToServer.DELETE_FAIL:
 					Toast.makeText(getApplicationContext(),"Product delete failed", Toast.LENGTH_SHORT).show();
 				}
@@ -155,7 +161,7 @@ public class ProductManage extends Activity {
 		public Button deleteProduct;
 	}
 	
-	class ProductAdapter extends BaseAdapter {
+	public class ProductAdapter extends BaseAdapter {
 
 		LayoutInflater myInflater;
 
@@ -191,7 +197,7 @@ public class ProductManage extends Activity {
 			if(convertView == null) {
 				
 				pViewHolder = new ViewHolder(); 
-				convertView = myInflater.inflate(R.layout.productitem,null);
+				convertView = myInflater.inflate(R.layout.productitem,parent,false);
 				pViewHolder.productPhoto = (ImageView) convertView.findViewById(R.id.productPhoto);
 				pViewHolder.productName = (TextView) convertView.findViewById(R.id.productName);
 				pViewHolder.productPrice = (TextView) convertView.findViewById(R.id.productPrice);
@@ -211,24 +217,23 @@ public class ProductManage extends Activity {
 						p_msg = "deleteProduct" + "\n" + product_set.get(p).productID;
 						new SendToServer(SendToServer.MessagePort, p_msg, MessageHandler, 
 								SendToServer.DELETE_PRODUCT).start();	
-						
-						product_set.remove(p);
-						productAdapter.notifyDataSetChanged();
 					}
 				});
 				
 				convertView.setTag(pViewHolder);
 			}
+			else {
+				pViewHolder = (ViewHolder) convertView.getTag();
+			}
 			
 			// fill data
-			ViewHolder vi = (ViewHolder) convertView.getTag();
 			byte [] pPhoto = product_set.get(position).productPhoto;
 			Bitmap bm = BitmapFactory.decodeByteArray(pPhoto, 0,
 					pPhoto.length, null);
-			vi.productPhoto.setImageBitmap(getResizedBitmap(bm,100,100));
-			vi.productName.setText(product_set.get(position).productName);
-			vi.productPrice.setText(String.valueOf(product_set.get(position).productPrice));
-			vi.deleteProduct.setTag(position);
+			pViewHolder.productPhoto.setImageBitmap(getResizedBitmap(bm,100,100));
+			pViewHolder.productName.setText(product_set.get(position).productName);
+			pViewHolder.productPrice.setText(String.valueOf(product_set.get(position).productPrice));
+			pViewHolder.deleteProduct.setTag(position);
 			
 			return convertView;
 		}

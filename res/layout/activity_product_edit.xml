@@ -102,7 +102,7 @@
                     android:id="@+id/update_product"
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
-                    android:text="Upload" />
+                    android:text="Update" />
 
                 <Button
                     android:id="@+id/cancel_update"
