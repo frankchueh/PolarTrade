@@ -200,7 +200,7 @@ public class UserinfoManager extends Activity {
 					photoPath = info[2];
 					if (!photoPath.equals("null")) {
 						String msg_getphoto = "GetPhoto\n" + photoPath;
-						new SendToServer(SendToServer.MessagePort, msg_getphoto,
+						new SendToServer(SendToServer.PhotoPort, msg_getphoto,
 								MessageHandler, SendToServer.GET_PHOTO).start();
 					}
 					break;
