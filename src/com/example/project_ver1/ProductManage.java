@@ -10,6 +10,7 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import org.apache.commons.lang.SerializationUtils;
@@ -17,10 +18,14 @@ import org.apache.commons.lang.SerializationUtils;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -96,7 +101,7 @@ public class ProductManage extends Activity {
 	
 	protected void setListView() {
 		
-		productAdapter = new ProductAdapter(this);
+		productAdapter = new ProductAdapter(ProductManage.this);
 		productView.setAdapter(productAdapter);
 		productView.setOnItemClickListener(new ListView.OnItemClickListener() {
 
@@ -159,14 +164,69 @@ public class ProductManage extends Activity {
 		public TextView productPrice;
 		public ImageView productPhoto;
 		public Button deleteProduct;
+		public int position;
+	}
+	
+	static class AsyncDrawable extends BitmapDrawable {
+	    private final WeakReference<LoadImageThread> bitmapWorkerTaskReference;
+
+	    public AsyncDrawable(Resources res, Bitmap bitmap,
+	    		LoadImageThread bitmapWorkerTask) {
+	        super(res, bitmap);
+	        bitmapWorkerTaskReference =
+	            new WeakReference<LoadImageThread>(bitmapWorkerTask);
+	    }
+
+	    public LoadImageThread getBitmapWorkerTask() {
+	        return bitmapWorkerTaskReference.get();
+	    }
+	}
+	
+	public class LoadImageThread extends AsyncTask <Product, Void , Bitmap> {
+		
+		private Product load_P;
+		private final WeakReference<ImageView> imageViewReference;
+		private int pos;
+		
+		public LoadImageThread(ImageView img) {
+
+			imageViewReference = new WeakReference<ImageView>(img);
+		}
+		@Override 
+		protected Bitmap doInBackground(Product... params) {
+			load_P = params[0];
+			byte [] pPhoto = load_P.productPhoto;
+			Bitmap bm = BitmapFactory.decodeByteArray(pPhoto, 0,
+					pPhoto.length, null);
+			return bm;
+		}
+		@Override
+		protected void onPostExecute(Bitmap result) {
+			
+			//super.onPostExecute(result);
+			
+			if (isCancelled()) {
+	            result = null;
+	        }
+			if (imageViewReference != null && result != null) {
+	            final ImageView imageView = imageViewReference.get();
+	            final LoadImageThread bitmapWorkerTask =
+	                    getBitmapWorkerTask(imageView);
+	            if (this == bitmapWorkerTask && imageView != null) {
+	                imageView.setImageBitmap(getResizedBitmap(result,100,100));
+	            }
+	        }
+		}
 	}
 	
 	public class ProductAdapter extends BaseAdapter {
-
+		 
 		LayoutInflater myInflater;
-
-		public ProductAdapter(ProductManage listViewActivity) {
-			myInflater = LayoutInflater.from(listViewActivity);
+		private Activity context;
+		
+		public ProductAdapter(Activity con) {
+			this.context = con;
+			myInflater = context.getLayoutInflater();
 		}
 
 		@Override
@@ -193,11 +253,10 @@ public class ProductManage extends Activity {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			// TODO Auto-generated method stub
 			ViewHolder pViewHolder = null;
-			
 			if(convertView == null) {
 				
-				pViewHolder = new ViewHolder(); 
 				convertView = myInflater.inflate(R.layout.productitem,parent,false);
+				pViewHolder = new ViewHolder(); 
 				pViewHolder.productPhoto = (ImageView) convertView.findViewById(R.id.productPhoto);
 				pViewHolder.productName = (TextView) convertView.findViewById(R.id.productName);
 				pViewHolder.productPrice = (TextView) convertView.findViewById(R.id.productPrice);
@@ -220,17 +279,15 @@ public class ProductManage extends Activity {
 					}
 				});
 				
+				pViewHolder.position = position;
 				convertView.setTag(pViewHolder);
+				
 			}
 			else {
 				pViewHolder = (ViewHolder) convertView.getTag();
 			}
-			
 			// fill data
-			byte [] pPhoto = product_set.get(position).productPhoto;
-			Bitmap bm = BitmapFactory.decodeByteArray(pPhoto, 0,
-					pPhoto.length, null);
-			pViewHolder.productPhoto.setImageBitmap(getResizedBitmap(bm,100,100));
+			loadBitmap(product_set.get(position) , pViewHolder.productPhoto );
 			pViewHolder.productName.setText(product_set.get(position).productName);
 			pViewHolder.productPrice.setText(String.valueOf(product_set.get(position).productPrice));
 			pViewHolder.deleteProduct.setTag(position);
@@ -238,6 +295,46 @@ public class ProductManage extends Activity {
 			return convertView;
 		}
 	}
+	
+	public void loadBitmap(Product resP , ImageView img) {
+		
+		if(cancelPotentialWork(resP, img)) {
+			final LoadImageThread loadtask = new LoadImageThread(img);
+			final AsyncDrawable asyncDrawable =
+                new AsyncDrawable(getResources(),img.getDrawingCache(), loadtask);
+			img.setImageDrawable(asyncDrawable);
+			loadtask.execute(resP);
+		}
+	}
+	
+	public static boolean cancelPotentialWork(Product data, ImageView imageView) {
+	    final LoadImageThread bitmapWorkerTask = getBitmapWorkerTask(imageView);
+
+	    if (bitmapWorkerTask != null) {
+	        final Product bitmapData = bitmapWorkerTask.load_P;
+	        // If bitmapData is not yet set or it differs from the new data
+	        if (bitmapData == null || bitmapData != data) {
+	            // Cancel previous task
+	            bitmapWorkerTask.cancel(true);
+	        } else {
+	            // The same work is already in progress
+	            return false;
+	        }
+	    }
+	    // No task associated with the ImageView, or an existing task was cancelled
+	    return true;
+	}
+	
+	private static LoadImageThread getBitmapWorkerTask(ImageView imageView) {
+		   if (imageView != null) {
+		       final Drawable drawable = imageView.getDrawable();
+		       if (drawable instanceof AsyncDrawable) {
+		           final AsyncDrawable asyncDrawable = (AsyncDrawable) drawable;
+		           return asyncDrawable.getBitmapWorkerTask();
+		       }
+		    }
+		    return null;
+		}
 	
 	public Bitmap getResizedBitmap(Bitmap bm , int new_width , int new_height) {
 		// 重新設定商品圖片大小
