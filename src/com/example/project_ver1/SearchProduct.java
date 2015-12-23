@@ -217,6 +217,7 @@ public class SearchProduct extends Activity {
 			Bitmap bm = BitmapFactory.decodeByteArray(pPhoto, 0,
 					pPhoto.length, null);
 			vi.productPhoto.setImageBitmap(getResizedBitmap(bm,100,100));
+
 			vi.productName.setText(product_set.get(position).productName);
 			vi.productPrice.setText(String.valueOf(product_set.get(position).productPrice));*/
 			
