@@ -12,6 +12,7 @@ import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.commons.lang.SerializationUtils;
 
@@ -31,6 +32,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,6 +54,7 @@ public class ProductManage extends Activity {
 	int p_num = 0;  // 總商品數量
 	public static final int UPDATE_SUCCESS = 7001 , UPDATE_CANCEL = 7002;
 	Handler MessageHandler;
+	public HashMap<Integer,Bitmap> productMap = new HashMap<Integer,Bitmap>();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -164,58 +167,37 @@ public class ProductManage extends Activity {
 		public TextView productPrice;
 		public ImageView productPhoto;
 		public Button deleteProduct;
-		public int position;
 	}
 	
-	static class AsyncDrawable extends BitmapDrawable {
-	    private final WeakReference<LoadImageThread> bitmapWorkerTaskReference;
-
-	    public AsyncDrawable(Resources res, Bitmap bitmap,
-	    		LoadImageThread bitmapWorkerTask) {
-	        super(res, bitmap);
-	        bitmapWorkerTaskReference =
-	            new WeakReference<LoadImageThread>(bitmapWorkerTask);
-	    }
-
-	    public LoadImageThread getBitmapWorkerTask() {
-	        return bitmapWorkerTaskReference.get();
-	    }
-	}
 	
 	public class LoadImageThread extends AsyncTask <Product, Void , Bitmap> {
 		
 		private Product load_P;
-		private final WeakReference<ImageView> imageViewReference;
-		private int pos;
+		private ImageView img;
 		
 		public LoadImageThread(ImageView img) {
-
-			imageViewReference = new WeakReference<ImageView>(img);
+			this.img = img;
 		}
 		@Override 
 		protected Bitmap doInBackground(Product... params) {
 			load_P = params[0];
-			byte [] pPhoto = load_P.productPhoto;
-			Bitmap bm = BitmapFactory.decodeByteArray(pPhoto, 0,
-					pPhoto.length, null);
-			return bm;
+			if(productMap.get(load_P.productID) == null) {
+				byte [] pPhoto = load_P.productPhoto;
+				Bitmap bm = getResizedBitmap(BitmapFactory.decodeByteArray(pPhoto, 0, pPhoto.length , null),100,100);
+				productMap.put(load_P.productID,bm);
+				Log.d("firstLoadView", load_P.productName);
+				return bm;
+			}
+			else {
+				Log.d("secondLoadView", load_P.productName);
+				return productMap.get(load_P.productID);
+			}
 		}
 		@Override
 		protected void onPostExecute(Bitmap result) {
 			
-			//super.onPostExecute(result);
-			
-			if (isCancelled()) {
-	            result = null;
-	        }
-			if (imageViewReference != null && result != null) {
-	            final ImageView imageView = imageViewReference.get();
-	            final LoadImageThread bitmapWorkerTask =
-	                    getBitmapWorkerTask(imageView);
-	            if (this == bitmapWorkerTask && imageView != null) {
-	                imageView.setImageBitmap(getResizedBitmap(result,100,100));
-	            }
-	        }
+			super.onPostExecute(result);
+			img.setImageBitmap(result);
 		}
 	}
 	
@@ -268,7 +250,7 @@ public class ProductManage extends Activity {
 				int t_height = dm.heightPixels/4;
 				pViewHolder.productPhoto.setMinimumHeight(t_height);
 				pViewHolder.productPhoto.setMinimumWidth(t_width);
-				
+
 				pViewHolder.deleteProduct.setOnClickListener(new Button.OnClickListener() {
 					@Override
 					public void onClick(View v) {
@@ -278,63 +260,20 @@ public class ProductManage extends Activity {
 								SendToServer.DELETE_PRODUCT).start();	
 					}
 				});
-				
-				pViewHolder.position = position;
 				convertView.setTag(pViewHolder);
-				
 			}
 			else {
 				pViewHolder = (ViewHolder) convertView.getTag();
 			}
-			// fill data
-			loadBitmap(product_set.get(position) , pViewHolder.productPhoto );
+			
 			pViewHolder.productName.setText(product_set.get(position).productName);
 			pViewHolder.productPrice.setText(String.valueOf(product_set.get(position).productPrice));
 			pViewHolder.deleteProduct.setTag(position);
-			
+			new LoadImageThread(pViewHolder.productPhoto).execute(product_set.get(position));
 			return convertView;
 		}
 	}
 	
-	public void loadBitmap(Product resP , ImageView img) {
-		
-		if(cancelPotentialWork(resP, img)) {
-			final LoadImageThread loadtask = new LoadImageThread(img);
-			final AsyncDrawable asyncDrawable =
-                new AsyncDrawable(getResources(),img.getDrawingCache(), loadtask);
-			img.setImageDrawable(asyncDrawable);
-			loadtask.execute(resP);
-		}
-	}
-	
-	public static boolean cancelPotentialWork(Product data, ImageView imageView) {
-	    final LoadImageThread bitmapWorkerTask = getBitmapWorkerTask(imageView);
-
-	    if (bitmapWorkerTask != null) {
-	        final Product bitmapData = bitmapWorkerTask.load_P;
-	        // If bitmapData is not yet set or it differs from the new data
-	        if (bitmapData == null || bitmapData != data) {
-	            // Cancel previous task
-	            bitmapWorkerTask.cancel(true);
-	        } else {
-	            // The same work is already in progress
-	            return false;
-	        }
-	    }
-	    // No task associated with the ImageView, or an existing task was cancelled
-	    return true;
-	}
-	
-	private static LoadImageThread getBitmapWorkerTask(ImageView imageView) {
-		   if (imageView != null) {
-		       final Drawable drawable = imageView.getDrawable();
-		       if (drawable instanceof AsyncDrawable) {
-		           final AsyncDrawable asyncDrawable = (AsyncDrawable) drawable;
-		           return asyncDrawable.getBitmapWorkerTask();
-		       }
-		    }
-		    return null;
-		}
 	
 	public Bitmap getResizedBitmap(Bitmap bm , int new_width , int new_height) {
 		// 重新設定商品圖片大小
