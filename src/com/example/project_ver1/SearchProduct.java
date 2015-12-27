@@ -143,7 +143,7 @@ public class SearchProduct extends Activity {
 				
 				it.putExtras(bu);
 				it.setClass(SearchProduct.this, ProductInfo.class);
-				startActivityForResult(it , position);	
+				startActivity(it);
 			}
 		});		
 	}
@@ -190,7 +190,7 @@ public class SearchProduct extends Activity {
 			if(convertView == null) {
 				
 				pViewHolder = new ViewHolder(); 
-				convertView = myInflater.inflate(R.layout.product_result,null);
+				convertView = myInflater.inflate(R.layout.productitem, parent, false);
 				pViewHolder.productPhoto = (ImageView) convertView.findViewById(R.id.productPhoto);
 				pViewHolder.productName = (TextView) convertView.findViewById(R.id.productName);
 				pViewHolder.productPrice = (TextView) convertView.findViewById(R.id.productPrice);
