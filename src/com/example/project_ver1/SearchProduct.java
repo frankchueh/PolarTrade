@@ -11,8 +11,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.commons.lang.SerializationUtils;
+
+import com.example.project_ver1.ProductManage.LoadImageThread;
+import com.example.project_ver1.ProductManage.ViewHolder;
 
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -23,11 +27,13 @@ import android.graphics.Matrix;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,6 +58,8 @@ public class SearchProduct extends Activity {
 	double[] position;
 	Handler MessageHandler;
 	String command;
+	public HashMap<Integer,Bitmap> productMap = new HashMap<Integer,Bitmap>();
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -154,6 +162,37 @@ public class SearchProduct extends Activity {
 		public ImageView productPhoto;
 	}
 	
+public class LoadImageThread extends AsyncTask <Product, Void , Bitmap> {
+		
+		private Product load_P;
+		private ImageView img;
+		
+		public LoadImageThread(ImageView img) {
+			this.img = img;
+		}
+		@Override 
+		protected Bitmap doInBackground(Product... params) {
+			load_P = params[0];
+			if(productMap.get(load_P.productID) == null) {
+				byte [] pPhoto = load_P.productPhoto;
+				Bitmap bm = getResizedBitmap(BitmapFactory.decodeByteArray(pPhoto, 0, pPhoto.length , null),100,100);
+				productMap.put(load_P.productID,bm);
+				Log.d("firstLoadView", load_P.productName);
+				return bm;
+			}
+			else {
+				Log.d("secondLoadView", load_P.productName);
+				return productMap.get(load_P.productID);
+			}
+		}
+		@Override
+		protected void onPostExecute(Bitmap result) {
+			
+			super.onPostExecute(result);
+			img.setImageBitmap(result);
+		}
+	}
+	
 	class ProductAdapter extends BaseAdapter {
 
 		LayoutInflater myInflater;
@@ -188,7 +227,6 @@ public class SearchProduct extends Activity {
 			ViewHolder pViewHolder = null;
 			
 			if(convertView == null) {
-				
 				pViewHolder = new ViewHolder(); 
 				convertView = myInflater.inflate(R.layout.productitem, parent, false);
 				pViewHolder.productPhoto = (ImageView) convertView.findViewById(R.id.productPhoto);
@@ -202,26 +240,16 @@ public class SearchProduct extends Activity {
 				pViewHolder.productPhoto.setMinimumHeight(t_height);
 				pViewHolder.productPhoto.setMinimumWidth(t_width);
 				
-				byte [] pPhoto = product_set.get(position).productPhoto;
-				Bitmap bm = BitmapFactory.decodeByteArray(pPhoto, 0,
-						pPhoto.length, null);
-				pViewHolder.productPhoto.setImageBitmap(getResizedBitmap(bm,100,100));
-				pViewHolder.productName.setText(product_set.get(position).productName);
-				pViewHolder.productPrice.setText(String.valueOf(product_set.get(position).productPrice));
-				
 				convertView.setTag(pViewHolder);
 			}
-			
+			else {
+				pViewHolder = (ViewHolder) convertView.getTag();
+			}
 			// fill data
-			/*ViewHolder vi = (ViewHolder) convertView.getTag();
-			byte [] pPhoto = product_set.get(position).productPhoto;
-			Bitmap bm = BitmapFactory.decodeByteArray(pPhoto, 0,
-					pPhoto.length, null);
-			vi.productPhoto.setImageBitmap(getResizedBitmap(bm,100,100));
-
-			vi.productName.setText(product_set.get(position).productName);
-			vi.productPrice.setText(String.valueOf(product_set.get(position).productPrice));*/
 			
+			pViewHolder.productName.setText(product_set.get(position).productName);
+			pViewHolder.productPrice.setText(String.valueOf(product_set.get(position).productPrice));
+			new LoadImageThread(pViewHolder.productPhoto).execute(product_set.get(position));
 			return convertView;
 		}
 	}

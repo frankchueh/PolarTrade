@@ -10,22 +10,29 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.commons.lang.SerializationUtils;
 
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +54,7 @@ public class ProductManage extends Activity {
 	int p_num = 0;  // 總商品數量
 	public static final int UPDATE_SUCCESS = 7001 , UPDATE_CANCEL = 7002;
 	Handler MessageHandler;
+	public HashMap<Integer,Bitmap> productMap = new HashMap<Integer,Bitmap>();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +104,7 @@ public class ProductManage extends Activity {
 	
 	protected void setListView() {
 		
-		productAdapter = new ProductAdapter(this);
+		productAdapter = new ProductAdapter(ProductManage.this);
 		productView.setAdapter(productAdapter);
 		productView.setOnItemClickListener(new ListView.OnItemClickListener() {
 
@@ -161,12 +169,46 @@ public class ProductManage extends Activity {
 		public Button deleteProduct;
 	}
 	
+	
+	public class LoadImageThread extends AsyncTask <Product, Void , Bitmap> {
+		
+		private Product load_P;
+		private ImageView img;
+		
+		public LoadImageThread(ImageView img) {
+			this.img = img;
+		}
+		@Override 
+		protected Bitmap doInBackground(Product... params) {
+			load_P = params[0];
+			if(productMap.get(load_P.productID) == null) {
+				byte [] pPhoto = load_P.productPhoto;
+				Bitmap bm = getResizedBitmap(BitmapFactory.decodeByteArray(pPhoto, 0, pPhoto.length , null),100,100);
+				productMap.put(load_P.productID,bm);
+				Log.d("firstLoadView", load_P.productName);
+				return bm;
+			}
+			else {
+				Log.d("secondLoadView", load_P.productName);
+				return productMap.get(load_P.productID);
+			}
+		}
+		@Override
+		protected void onPostExecute(Bitmap result) {
+			
+			super.onPostExecute(result);
+			img.setImageBitmap(result);
+		}
+	}
+	
 	public class ProductAdapter extends BaseAdapter {
-
+		 
 		LayoutInflater myInflater;
-
-		public ProductAdapter(ProductManage listViewActivity) {
-			myInflater = LayoutInflater.from(listViewActivity);
+		private Activity context;
+		
+		public ProductAdapter(Activity con) {
+			this.context = con;
+			myInflater = context.getLayoutInflater();
 		}
 
 		@Override
@@ -193,11 +235,10 @@ public class ProductManage extends Activity {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			// TODO Auto-generated method stub
 			ViewHolder pViewHolder = null;
-			
 			if(convertView == null) {
 				
-				pViewHolder = new ViewHolder(); 
 				convertView = myInflater.inflate(R.layout.productitem,parent,false);
+				pViewHolder = new ViewHolder(); 
 				pViewHolder.productPhoto = (ImageView) convertView.findViewById(R.id.productPhoto);
 				pViewHolder.productName = (TextView) convertView.findViewById(R.id.productName);
 				pViewHolder.productPrice = (TextView) convertView.findViewById(R.id.productPrice);
@@ -209,7 +250,7 @@ public class ProductManage extends Activity {
 				int t_height = dm.heightPixels/4;
 				pViewHolder.productPhoto.setMinimumHeight(t_height);
 				pViewHolder.productPhoto.setMinimumWidth(t_width);
-				
+
 				pViewHolder.deleteProduct.setOnClickListener(new Button.OnClickListener() {
 					@Override
 					public void onClick(View v) {
@@ -219,25 +260,20 @@ public class ProductManage extends Activity {
 								SendToServer.DELETE_PRODUCT).start();	
 					}
 				});
-				
 				convertView.setTag(pViewHolder);
 			}
 			else {
 				pViewHolder = (ViewHolder) convertView.getTag();
 			}
 			
-			// fill data
-			byte [] pPhoto = product_set.get(position).productPhoto;
-			Bitmap bm = BitmapFactory.decodeByteArray(pPhoto, 0,
-					pPhoto.length, null);
-			pViewHolder.productPhoto.setImageBitmap(getResizedBitmap(bm,100,100));
 			pViewHolder.productName.setText(product_set.get(position).productName);
 			pViewHolder.productPrice.setText(String.valueOf(product_set.get(position).productPrice));
 			pViewHolder.deleteProduct.setTag(position);
-			
+			new LoadImageThread(pViewHolder.productPhoto).execute(product_set.get(position));
 			return convertView;
 		}
 	}
+	
 	
 	public Bitmap getResizedBitmap(Bitmap bm , int new_width , int new_height) {
 		// 重新設定商品圖片大小
