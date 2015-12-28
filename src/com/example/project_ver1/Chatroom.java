@@ -45,12 +45,16 @@ public class Chatroom extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				String sendMsg = editChatMsg.getText().toString();
-				editChatMsg.setText(""); // 清空輸入框
+				
+				if (!sendMsg.equals("")) {
+					editChatMsg.setText(""); // 清空輸入框
 
-				String command = chatID + "\n" + mainActivity.Account + "\n"
-						+ sendMsg;
-				new SendToServer(SendToServer.MessagePort, command,
-						MessageHandler, SendToServer.UPDATE_MESSAGE).start();
+					String command = chatID + "\n" + mainActivity.Account
+							+ "\n" + sendMsg;
+					new SendToServer(SendToServer.MessagePort, command,
+							MessageHandler, SendToServer.UPDATE_MESSAGE)
+							.start();
+				}
 			}
 		});
 
@@ -101,19 +105,17 @@ public class Chatroom extends Activity {
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		
+
 		Intent call_it = getIntent();
 		// 先抓看有沒有chatID
 		chatID = call_it.getIntExtra("chatID", -1);
 		// 如果沒有chatID
-		
+
 		if (chatID != -1) {
 			workHandler.post(DownloadMsg);
 			Toast.makeText(getApplicationContext(), "OnResume",
 					Toast.LENGTH_SHORT).show();
-		}
-		else
-		{	
+		} else {
 			int PID = call_it.getIntExtra("produceID", -1);
 			int SID = call_it.getIntExtra("sellerID", -1);
 			if (PID == -1 || SID == -1) {
