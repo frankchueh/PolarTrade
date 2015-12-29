@@ -45,12 +45,16 @@ public class Chatroom extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				String sendMsg = editChatMsg.getText().toString();
-				editChatMsg.setText(""); // 清空輸入框
+				
+				if (!sendMsg.equals("")) {
+					editChatMsg.setText(""); // 清空輸入框
 
-				String command = chatID + "\n" + mainActivity.Account + "\n"
-						+ sendMsg;
-				new SendToServer(SendToServer.MessagePort, command,
-						MessageHandler, SendToServer.UPDATE_MESSAGE).start();
+					String command = chatID + "\n" + mainActivity.Account
+							+ "\n" + sendMsg;
+					new SendToServer(SendToServer.MessagePort, command,
+							MessageHandler, SendToServer.UPDATE_MESSAGE)
+							.start();
+				}
 			}
 		});
 
@@ -62,7 +66,7 @@ public class Chatroom extends Activity {
 				switch (msg.what) {
 				case SendToServer.GET_CHAT_ROOM:
 					chatID = Integer.parseInt(msg.obj.toString());
-					workHandler.postDelayed(DownloadMsg, DownloadTime);
+					workHandler.post(DownloadMsg);
 					break;
 				case SendToServer.DOWNLOAD_MESSAGE:
 					txtChatData.setText(msg.obj.toString());
@@ -82,23 +86,6 @@ public class Chatroom extends Activity {
 			}
 		};
 
-		Intent call_it = getIntent();
-		// 先抓看有沒有chatID
-		chatID = call_it.getIntExtra("chatID", -1);
-		// 如果沒有chatID
-		if (chatID == -1) {
-			int PID = call_it.getIntExtra("produceID", -1);
-			int SID = call_it.getIntExtra("sellerID", -1);
-			if (PID == -1 || SID == -1) {
-				Toast.makeText(getApplicationContext(), "Get Chatroom Error",
-						Toast.LENGTH_SHORT).show();
-			} else {
-				String msg = "GetChatRoom\n" + PID + "\n" + SID + "\n"
-						+ mainActivity.Account;
-				new SendToServer(SendToServer.MessagePort, msg, MessageHandler,
-						SendToServer.GET_CHAT_ROOM).start();
-			}
-		}
 	}
 
 	// 下載訊息
@@ -118,9 +105,29 @@ public class Chatroom extends Activity {
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		workHandler.post(DownloadMsg);
-		Toast.makeText(getApplicationContext(), "OnResume", Toast.LENGTH_SHORT)
-				.show();
+
+		Intent call_it = getIntent();
+		// 先抓看有沒有chatID
+		chatID = call_it.getIntExtra("chatID", -1);
+		// 如果沒有chatID
+
+		if (chatID != -1) {
+			workHandler.post(DownloadMsg);
+			Toast.makeText(getApplicationContext(), "OnResume",
+					Toast.LENGTH_SHORT).show();
+		} else {
+			int PID = call_it.getIntExtra("produceID", -1);
+			int SID = call_it.getIntExtra("sellerID", -1);
+			if (PID == -1 || SID == -1) {
+				Toast.makeText(getApplicationContext(), "Get Chatroom Error",
+						Toast.LENGTH_SHORT).show();
+			} else {
+				String msg = "GetChatRoom\n" + PID + "\n" + SID + "\n"
+						+ mainActivity.Account;
+				new SendToServer(SendToServer.MessagePort, msg, MessageHandler,
+						SendToServer.GET_CHAT_ROOM).start();
+			}
+		}
 	}
 
 	@Override

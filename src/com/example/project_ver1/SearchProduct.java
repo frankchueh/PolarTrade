@@ -1,31 +1,18 @@
 package com.example.project_ver1;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import org.apache.commons.lang.SerializationUtils;
-
-import com.example.project_ver1.ProductManage.LoadImageThread;
-import com.example.project_ver1.ProductManage.ViewHolder;
-
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -151,7 +138,7 @@ public class SearchProduct extends Activity {
 				
 				it.putExtras(bu);
 				it.setClass(SearchProduct.this, ProductInfo.class);
-				startActivityForResult(it , position);	
+				startActivity(it);
 			}
 		});		
 	}
@@ -227,8 +214,8 @@ public class LoadImageThread extends AsyncTask <Product, Void , Bitmap> {
 			ViewHolder pViewHolder = null;
 			
 			if(convertView == null) {
-				pViewHolder = new ViewHolder(); 
-				convertView = myInflater.inflate(R.layout.productitem,parent,false);
+				pViewHolder = new ViewHolder(); 	
+				convertView = myInflater.inflate(R.layout.productitem, parent, false);
 				pViewHolder.productPhoto = (ImageView) convertView.findViewById(R.id.productPhoto);
 				pViewHolder.productName = (TextView) convertView.findViewById(R.id.productName);
 				pViewHolder.productPrice = (TextView) convertView.findViewById(R.id.productPrice);

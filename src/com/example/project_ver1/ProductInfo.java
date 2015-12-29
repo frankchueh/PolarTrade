@@ -142,8 +142,8 @@ public class ProductInfo extends Activity {
 				bu.putString("photo",orgUri.toString());   // 商品圖片超連結
 				
 				it.putExtras(bu);
-				it.setClass(ProductInfo.this,ProductEdit.class);
-				startActivityForResult(it , EDIT_PRODUCT);		
+				it.setClass(ProductInfo.this, ProductEdit.class);
+				startActivityForResult(it , EDIT_PRODUCT);
 			}
 		});
 		
