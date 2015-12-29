@@ -120,6 +120,7 @@ public class ProductEdit extends Activity {
 					it.putExtras(bu);
 					setResult(ProductManage.UPDATE_SUCCESS , it);
 					finish();
+					break;
 					
 				case SendToServer.FAIL:
 					

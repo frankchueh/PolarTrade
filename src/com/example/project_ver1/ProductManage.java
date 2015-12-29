@@ -31,6 +31,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -38,7 +40,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 
-public class ProductManage extends Activity {
+public class ProductManage extends AppCompatActivity {
 	
 	private ListView productView;
 	ProductAdapter productAdapter;
@@ -61,6 +63,9 @@ public class ProductManage extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_product_manage);
 		
+		Toolbar toolbar = (Toolbar) findViewById(R.id.magagetoolbar);
+	    setSupportActionBar(toolbar);
+	    
 		productView = (ListView)findViewById(R.id.productlistview);
 						
 		MessageHandler = new Handler() {

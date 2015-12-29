@@ -268,7 +268,7 @@ public class SendToServer extends Thread {
 					oos.flush();
 					
 					if (br.readLine().equals("msg2 success")) {
-						return_msg.what = SUCCESS;
+						return_msg.what = UPDATE_MESSAGE_SUCCESS;
 					} else {
 						return_msg.what = FAIL;
 					}
