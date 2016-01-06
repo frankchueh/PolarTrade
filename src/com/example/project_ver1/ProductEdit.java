@@ -24,13 +24,14 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-public class ProductEdit extends Activity {
+public class ProductEdit extends ActionBarActivity {
 	
 	private Button btnProductUpdate , btnCancelUpdate , btnChangePhoto , btnDeletePhoto;
 	private EditText editProductName , editProductPrice , editProductInfo;

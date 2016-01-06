@@ -17,7 +17,9 @@ import java.util.HashMap;
 import org.apache.commons.lang.SerializationUtils;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -31,18 +33,21 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 
-public class ProductManage extends AppCompatActivity {
+public class ProductManage extends ActionBarActivity {
 	
 	private ListView productView;
+	private ProgressBar spinner;
 	ProductAdapter productAdapter;
 	private File mpPhoto;
 	private File ProductPhotoDir = new File(
@@ -57,17 +62,16 @@ public class ProductManage extends AppCompatActivity {
 	public static final int UPDATE_SUCCESS = 7001 , UPDATE_CANCEL = 7002;
 	Handler MessageHandler;
 	public HashMap<Integer,Bitmap> productMap = new HashMap<Integer,Bitmap>();
+	public int buttonHiding = 0;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_product_manage);
 		
-		Toolbar toolbar = (Toolbar) findViewById(R.id.magagetoolbar);
-	    setSupportActionBar(toolbar);
-	    
-		productView = (ListView)findViewById(R.id.productlistview);
-						
+		productView = (ListView)findViewById(R.id.productlistview);	
+		spinner = (ProgressBar)findViewById(R.id.progressBar);
+		
 		MessageHandler = new Handler() {
 
 			public void handleMessage(Message msg) {
@@ -75,8 +79,8 @@ public class ProductManage extends AppCompatActivity {
 				case SendToServer.SUCCESS_GET_PID:     // 成功取得使用者所有 pids
 					byte[] temp_p = (byte[]) msg.obj;
 					product_set = (ArrayList<Product>) SerializationUtils.deserialize(temp_p);
-//					product_set = (ArrayList<Product>) msg.obj;
 					Toast.makeText(getApplicationContext(), "Products download success", Toast.LENGTH_SHORT).show();
+					spinner.setVisibility(View.GONE);
 					setListView();	// 設置畫面
 					break;
 				
@@ -186,17 +190,18 @@ public class ProductManage extends AppCompatActivity {
 		@Override 
 		protected Bitmap doInBackground(Product... params) {
 			load_P = params[0];
+			Bitmap bm = null;
 			if(productMap.get(load_P.productID) == null) {
 				byte [] pPhoto = load_P.productPhoto;
-				Bitmap bm = getResizedBitmap(BitmapFactory.decodeByteArray(pPhoto, 0, pPhoto.length , null),100,100);
-				productMap.put(load_P.productID,bm);
-				Log.d("firstLoadView", load_P.productName);
-				return bm;
+				bm = BitmapFactory.decodeByteArray(pPhoto, 0, pPhoto.length , null);
+				productMap.put(load_P.productID,Bitmap.createScaledBitmap(bm, 150, 150 , false));
+				//Log.d("firstLoadView", load_P.productName);
 			}
 			else {
-				Log.d("secondLoadView", load_P.productName);
-				return productMap.get(load_P.productID);
+				//Log.d("secondLoadView", load_P.productName);
+				bm = productMap.get(load_P.productID);
 			}
+			return bm;
 		}
 		@Override
 		protected void onPostExecute(Bitmap result) {
@@ -210,6 +215,7 @@ public class ProductManage extends AppCompatActivity {
 		 
 		LayoutInflater myInflater;
 		private Activity context;
+		Bitmap bm = null;
 		
 		public ProductAdapter(Activity con) {
 			this.context = con;
@@ -261,8 +267,25 @@ public class ProductManage extends AppCompatActivity {
 					public void onClick(View v) {
 						int p = (Integer) v.getTag();
 						p_msg = "deleteProduct" + "\n" + p + "\n" + product_set.get(p).productID;
-						new SendToServer(SendToServer.MessagePort, p_msg, MessageHandler, 
-								SendToServer.DELETE_PRODUCT).start();	
+						final CharSequence[] items = { "是", "否" };
+						
+						AlertDialog dlg = new AlertDialog.Builder(ProductManage.this)
+								.setTitle("確定要移除商品嗎?")
+								.setItems(items, new DialogInterface.OnClickListener() {
+									@Override
+									public void onClick(DialogInterface dialog,
+											int which) {
+										// TODO Auto-generated method stub
+								        if(which == 0) {
+											new SendToServer(SendToServer.MessagePort, p_msg, MessageHandler, 
+													SendToServer.DELETE_PRODUCT).start();
+								        }
+								        else {
+								  
+								        }
+									}
+								}).create();
+					   dlg.show();
 					}
 				});
 				convertView.setTag(pViewHolder);
@@ -274,6 +297,12 @@ public class ProductManage extends AppCompatActivity {
 			pViewHolder.productName.setText(product_set.get(position).productName);
 			pViewHolder.productPrice.setText(String.valueOf(product_set.get(position).productPrice));
 			pViewHolder.deleteProduct.setTag(position);
+			if(buttonHiding == 0) {
+				pViewHolder.deleteProduct.setVisibility(View.GONE);
+			}
+			else {
+				pViewHolder.deleteProduct.setVisibility(View.VISIBLE);
+			}
 			new LoadImageThread(pViewHolder.productPhoto).execute(product_set.get(position));
 			return convertView;
 		}
@@ -324,6 +353,35 @@ public class ProductManage extends AppCompatActivity {
 		outStream.close();
 		in.close();
 		return data;
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.product_manage, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		else if(id == R.id.action_delete) {
+			if(buttonHiding == 0) {
+				buttonHiding = 1;
+			}
+			else {
+				buttonHiding = 0;
+			}
+			productAdapter.notifyDataSetChanged();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 	
 }

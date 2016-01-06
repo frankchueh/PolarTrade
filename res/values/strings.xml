@@ -8,5 +8,6 @@
     <string name="title_activity_product_manage">ProductManage</string>
     <string name="title_activity_product_edit">ProductEdit</string>
     <string name="title_activity_product_info">ProductInfo</string>
+    <string name="action_delete">Edit</string>
 
 </resources>

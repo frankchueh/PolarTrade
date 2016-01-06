@@ -3,21 +3,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    
-    <android.support.v7.widget.Toolbar
-	    android:id="@+id/magagetoolbar"
-	    android:layout_width="match_parent"
-	    android:layout_height="?attr/actionBarSize"
-   		android:background="?attr/colorPrimary"
-   		android:elevation="4dp"
-   		android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
-    
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" />
+
+    </RelativeLayout>
+
     <ListView
         android:id="@+id/productlistview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:smoothScrollbar="true" 
+        android:layout_weight="1"
+        android:animationCache="false"
         android:scrollingCache="false"
-        android:animationCache="false"/>
+        android:smoothScrollbar="true" >
+    </ListView>
 
 </LinearLayout>

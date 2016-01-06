@@ -3,14 +3,14 @@ package com.example.project_ver1;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class mainActivity extends AppCompatActivity {
+public class mainActivity extends ActionBarActivity {
 
 	Button btnUserInfo, btnChatroomList, btnProductUpload, btnStartService,
 			btnQuitService, btnProductManage, btnSearchProduct, btnShoppingCart;
@@ -30,8 +30,8 @@ public class mainActivity extends AppCompatActivity {
 		btnProductManage = (Button) this.findViewById(R.id.btnProductManage);
 		btnSearchProduct = (Button) this.findViewById(R.id.btnSearchProduct);
 		btnShoppingCart = (Button) this.findViewById(R.id.btnShoppingCart);
-		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-	    setSupportActionBar(toolbar);
+		//Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+	    //setSupportActionBar(toolbar);
 	    
 		Intent con = getIntent();
 		Account = con.getStringExtra("Account");

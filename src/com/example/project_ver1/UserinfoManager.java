@@ -20,6 +20,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -29,7 +30,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-public class UserinfoManager extends Activity {
+public class UserinfoManager extends ActionBarActivity {
 
 	EditText editUsername, editAge, editPhone, editEmail;
 	DatePicker dateBirth;

@@ -35,15 +35,6 @@
                android:text="Large Text"
                android:textAppearance="?android:attr/textAppearanceLarge" />
        </LinearLayout>
-
-       <Button
-           android:id="@+id/deletedProduct"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:layout_gravity="right"
-           android:focusable="false"
-           android:text="deleted" />
-
    </LinearLayout>
     
 </LinearLayout> 

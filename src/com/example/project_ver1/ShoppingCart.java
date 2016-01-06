@@ -27,13 +27,14 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.ActionBarActivity;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 
-public class ShoppingCart extends Activity {
+public class ShoppingCart extends ActionBarActivity {
 	
 	private ListView resultView;
 	ProductAdapter productAdapter;

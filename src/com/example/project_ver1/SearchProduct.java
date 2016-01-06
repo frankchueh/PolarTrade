@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.ActionBarActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,9 +27,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 
-public class SearchProduct extends Activity {
+public class SearchProduct extends ActionBarActivity {
 	
 	private ListView resultView;
+	private ProgressBar spinner;
 	ProductAdapter productAdapter;
 	Button btnSearch;
 	
@@ -53,6 +55,7 @@ public class SearchProduct extends Activity {
 		setContentView(R.layout.activity_product_search);
 		resultView = (ListView)findViewById(R.id.resultListView);
 		btnSearch = (Button)findViewById(R.id.btnSearch);
+		spinner = (ProgressBar)findViewById(R.id.searchingSpinner);
 		
 		MessageHandler = new Handler() {
 			public void handleMessage(Message msg) {
@@ -84,6 +87,8 @@ public class SearchProduct extends Activity {
 					break;
 				case SendToServer.SUCCESS:
 					product_set = (ArrayList<Product>) SerializationUtils.deserialize((byte[])msg.obj);
+					spinner.setVisibility(View.GONE);
+					btnSearch.setVisibility(View.VISIBLE);
 					setListView();
 					Toast.makeText(getApplicationContext(), "Get Product Success", Toast.LENGTH_SHORT).show();
 					break;
@@ -99,10 +104,18 @@ public class SearchProduct extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				if(!product_set.isEmpty()) {
+					product_set.clear();
+					productAdapter.notifyDataSetChanged();
+				}
 				String command = "getLocate\n" + mainActivity.Account;
+				spinner.setVisibility(View.VISIBLE);
 				new SendToServer(SendToServer.MessagePort, command,
 						MessageHandler, SendToServer.GET_LOCATE).start();
+				btnSearch.setVisibility(View.GONE);
 			}});
+		
+		spinner.setVisibility(View.GONE);
 	}
 	
 	protected void setListView() {
@@ -160,17 +173,19 @@ public class LoadImageThread extends AsyncTask <Product, Void , Bitmap> {
 		@Override 
 		protected Bitmap doInBackground(Product... params) {
 			load_P = params[0];
+			Bitmap bm = null;
 			if(productMap.get(load_P.productID) == null) {
 				byte [] pPhoto = load_P.productPhoto;
-				Bitmap bm = getResizedBitmap(BitmapFactory.decodeByteArray(pPhoto, 0, pPhoto.length , null),100,100);
-				productMap.put(load_P.productID,bm);
-				Log.d("firstLoadView", load_P.productName);
-				return bm;
+				bm = getResizedBitmap(BitmapFactory.decodeByteArray(pPhoto, 0, pPhoto.length , null),100,100);
+				productMap.put(load_P.productID,Bitmap.createScaledBitmap(bm, 150, 150 , false));
+				//Log.d("firstLoadView", load_P.productName);
 			}
 			else {
-				Log.d("secondLoadView", load_P.productName);
-				return productMap.get(load_P.productID);
+				//Log.d("secondLoadView", load_P.productName);
+				bm = productMap.get(load_P.productID);
 			}
+			
+			return bm;
 		}
 		@Override
 		protected void onPostExecute(Bitmap result) {
@@ -215,7 +230,7 @@ public class LoadImageThread extends AsyncTask <Product, Void , Bitmap> {
 			
 			if(convertView == null) {
 				pViewHolder = new ViewHolder(); 	
-				convertView = myInflater.inflate(R.layout.productitem, parent, false);
+				convertView = myInflater.inflate(R.layout.search_result, parent, false);
 				pViewHolder.productPhoto = (ImageView) convertView.findViewById(R.id.productPhoto);
 				pViewHolder.productName = (TextView) convertView.findViewById(R.id.productName);
 				pViewHolder.productPrice = (TextView) convertView.findViewById(R.id.productPrice);
