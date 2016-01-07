@@ -15,7 +15,8 @@ public class mainActivity extends ActionBarActivity {
 	Button btnUserInfo, btnChatroomList, btnProductUpload, btnStartService,
 			btnQuitService, btnProductManage, btnSearchProduct, btnShoppingCart;
 	public static String Account; // ¨Ï¥ÎªÌ±b¤á
-
+	private static final int STOP_SERVICE = 0 , START_SERVICE = 1;
+	private int service_state = STOP_SERVICE;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -85,15 +86,25 @@ public class mainActivity extends ActionBarActivity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent(mainActivity.this, GetPosition.class);
-				Bundle bundle = new Bundle();
-				bundle.putString("Account", Account);
-				intent.putExtras(bundle);
-				startService(intent);
+				if(service_state == STOP_SERVICE) {
+					Intent intent = new Intent(mainActivity.this, GetPosition.class);
+					Bundle bundle = new Bundle();
+					bundle.putString("Account", Account);
+					intent.putExtras(bundle);
+					service_state = START_SERVICE;
+					btnStartService.setBackgroundResource(R.drawable.location_on);
+					startService(intent);
+				}
+				else if(service_state == START_SERVICE) {
+					Intent intent = new Intent(mainActivity.this, GetPosition.class);
+					btnStartService.setBackgroundResource(R.drawable.location_off);
+					service_state = STOP_SERVICE;
+					stopService(intent);
+				}
 			}
 		});
 
-		btnQuitService.setOnClickListener(new Button.OnClickListener() {
+		/*btnQuitService.setOnClickListener(new Button.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -101,7 +112,7 @@ public class mainActivity extends ActionBarActivity {
 				Intent intent = new Intent(mainActivity.this, GetPosition.class);
 				stopService(intent);
 			}
-		});
+		});*/
 
 		btnProductManage.setOnClickListener(new Button.OnClickListener() {
 

@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="top"
-    android:orientation="vertical" >
+    android:orientation="vertical" 
+    android:background="@color/wallet_holo_blue_light">
 
     <LinearLayout
         android:id="@+id/LinearLayout2"
@@ -33,11 +34,111 @@
                     android:src="@drawable/default_photo" />
 
                 <TextView
-                    android:id="@+id/txtUserinfo"
+                    android:id="@+id/txtUserAccountLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="帳戶名稱"
+                    android:layout_marginTop="30dip"
+                    android:layout_marginLeft="30dip"
+                    android:textSize="20sp" />
+                <TextView
+                    android:id="@+id/txtUserAccount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="TextView"
-                    android:textSize="24sp" />
+                    android:textColor="#FFFFFF"
+                    android:layout_marginLeft="30dip"
+                    android:textSize="15sp" />
+                <TextView
+                    android:id="@+id/txtUserNameLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="姓名"
+                    android:layout_marginLeft="30dip"
+                    android:textSize="20sp" />
+                <TextView
+                    android:id="@+id/txtUserName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginLeft="30dip"
+                    android:textSize="15sp" />
+                <TextView
+                    android:id="@+id/txtUserAgeLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="年齡"
+                    android:layout_marginLeft="30dip"
+                    android:textSize="20sp" />
+                <TextView
+                    android:id="@+id/txtUserAge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginLeft="30dip"
+                    android:textSize="15sp" />
+                <TextView
+                    android:id="@+id/txtUserBirthLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="出生年月日"
+                    android:layout_marginLeft="30dip"
+                    android:textSize="20sp" />
+                <TextView
+                    android:id="@+id/txtUserBirth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginLeft="30dip"
+                    android:textSize="15sp" />
+                <TextView
+                    android:id="@+id/txtUserGenderLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="性別"
+                    android:layout_marginLeft="30dip"
+                    android:textSize="20sp" />
+                <TextView
+                    android:id="@+id/txtUserGender"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginLeft="30dip"
+                    android:textSize="15sp" />
+                <TextView
+                    android:id="@+id/txtUserMobileLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="手機號碼"
+                    android:layout_marginLeft="30dip"
+                    android:textSize="20sp" />
+                <TextView
+                    android:id="@+id/txtUserMobile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginLeft="30dip"
+                    android:textSize="15sp" />
+                <TextView
+                    android:id="@+id/txtUserEmailLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Email"
+                    android:layout_marginLeft="30dip"
+                    android:textSize="20sp" />
+                <TextView
+                    android:id="@+id/txtUserEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginLeft="30dip"
+                    android:textSize="15sp" />
 
             </LinearLayout>
         </ScrollView>
