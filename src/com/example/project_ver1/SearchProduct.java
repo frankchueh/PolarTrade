@@ -83,6 +83,8 @@ public class SearchProduct extends ActionBarActivity {
 							MessageHandler, SendToServer.GET_PRODUCT).start();
 					break;
 				case SendToServer.NO_SEARCH_RESULT:
+					spinner.setVisibility(View.GONE);
+					btnSearch.setVisibility(View.VISIBLE);
 					Toast.makeText(getApplicationContext(), "No Result", Toast.LENGTH_SHORT).show();
 					break;
 				case SendToServer.SUCCESS:
@@ -177,7 +179,7 @@ public class LoadImageThread extends AsyncTask <Product, Void , Bitmap> {
 			if(productMap.get(load_P.productID) == null) {
 				byte [] pPhoto = load_P.productPhoto;
 				bm = getResizedBitmap(BitmapFactory.decodeByteArray(pPhoto, 0, pPhoto.length , null),100,100);
-				productMap.put(load_P.productID,Bitmap.createScaledBitmap(bm, 150, 150 , false));
+				productMap.put(load_P.productID,Bitmap.createScaledBitmap(bm, 200, 200 , false));
 				//Log.d("firstLoadView", load_P.productName);
 			}
 			else {

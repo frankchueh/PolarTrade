@@ -186,7 +186,7 @@ public class OnShelf extends ActionBarActivity {
 			@Override
 			public void onClick(View v) {
 				
-				productImage.setImageResource(R.drawable.unknow_product);
+				productImage.setImageResource(R.drawable.placeholder);
 				mContent = null;
 			}
 		});		

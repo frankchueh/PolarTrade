@@ -194,7 +194,7 @@ public class ProductManage extends ActionBarActivity {
 			if(productMap.get(load_P.productID) == null) {
 				byte [] pPhoto = load_P.productPhoto;
 				bm = BitmapFactory.decodeByteArray(pPhoto, 0, pPhoto.length , null);
-				productMap.put(load_P.productID,Bitmap.createScaledBitmap(bm, 150, 150 , false));
+				productMap.put(load_P.productID,Bitmap.createScaledBitmap(bm, 200, 200 , false));
 				//Log.d("firstLoadView", load_P.productName);
 			}
 			else {
@@ -295,7 +295,7 @@ public class ProductManage extends ActionBarActivity {
 			}
 			
 			pViewHolder.productName.setText(product_set.get(position).productName);
-			pViewHolder.productPrice.setText(String.valueOf(product_set.get(position).productPrice));
+			pViewHolder.productPrice.setText("NT." + String.valueOf(product_set.get(position).productPrice));
 			pViewHolder.deleteProduct.setTag(position);
 			if(buttonHiding == 0) {
 				pViewHolder.deleteProduct.setVisibility(View.GONE);

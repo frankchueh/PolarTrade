@@ -27,9 +27,10 @@ public class UserInfo extends ActionBarActivity {
 
 	Handler MessageHandler;
 	Button btnUserinfoEdit, btnUserinfoBack;
-	TextView txtUserinfo;
+	TextView txtUserAccount , txtUserName , txtUserAge , txtUserBirth , txtUserGender , txtUserMobile , txtUserEmail;
 	ImageView imgUserinfoPhoto;
 	String photoPath = ""; // 另外接收photopath,傳到server來取得照片
+	String [] user_info = null;
 	byte[] mPhoto;
 
 	@Override
@@ -38,7 +39,13 @@ public class UserInfo extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.userinfo);
 
-		txtUserinfo = (TextView) this.findViewById(R.id.txtUserinfo);
+		txtUserAccount = (TextView) this.findViewById(R.id.txtUserAccount);
+		txtUserName = (TextView) this.findViewById(R.id.txtUserName);
+		txtUserAge = (TextView) this.findViewById(R.id.txtUserAge);
+		txtUserBirth = (TextView) this.findViewById(R.id.txtUserBirth);
+		txtUserGender = (TextView) this.findViewById(R.id.txtUserGender);
+		txtUserMobile = (TextView) this.findViewById(R.id.txtUserMobile);
+		txtUserEmail = (TextView) this.findViewById(R.id.txtUserEmail);
 		imgUserinfoPhoto = (ImageView) this.findViewById(R.id.imgUIMPhoto);
 		btnUserinfoEdit = (Button) this.findViewById(R.id.btnUserinfoEdit);
 		btnUserinfoBack = (Button) this.findViewById(R.id.btnUIMComfirm);
@@ -69,8 +76,17 @@ public class UserInfo extends ActionBarActivity {
 				case SendToServer.SUCCESS_GET_USERINFO:
 					// Toast.makeText(getApplicationContext(), "",
 					// Toast.LENGTH_SHORT).show();
-					txtUserinfo.setText(msg.obj.toString());
-					photoPath = msg.obj.toString().split("\n")[2]; // 2為photopath的位置
+					user_info = msg.obj.toString().split("\n");
+					//txtUserinfo.setText(msg.obj.toString());
+					//photoPath = msg.obj.toString().split("\n")[2]; // 2為photopath的位置
+					txtUserAccount.setText(user_info[0]);
+					txtUserName.setText(user_info[1]);
+					txtUserAge.setText(user_info[3]);
+					txtUserBirth.setText(user_info[4]);
+					txtUserGender.setText(user_info[5]);
+					txtUserMobile.setText(user_info[6]);
+					txtUserEmail.setText(user_info[7]);
+					photoPath = user_info[2];
 					String msg_getphoto = "GetPhoto\n" + photoPath;
 					new SendToServer(SendToServer.PhotoPort, msg_getphoto,
 							MessageHandler, SendToServer.GET_PHOTO).start(); // 傳到server並抓取圖片

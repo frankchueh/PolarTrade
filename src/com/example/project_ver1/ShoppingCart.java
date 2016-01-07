@@ -11,8 +11,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.commons.lang.SerializationUtils;
+
+import com.example.project_ver1.ProductManage.LoadImageThread;
 
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -23,6 +26,7 @@ import android.graphics.Matrix;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -38,6 +42,7 @@ public class ShoppingCart extends ActionBarActivity {
 	
 	private ListView resultView;
 	ProductAdapter productAdapter;
+	private ProgressBar spinner;
 	Button btnSearch;
 	
 	private File mpPhoto;
@@ -55,11 +60,13 @@ public class ShoppingCart extends ActionBarActivity {
 	double[] position;
 	Handler MessageHandler;
 	String command;
+	public HashMap<Integer,Bitmap> productMap = new HashMap<Integer,Bitmap>();
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_shopping_cart);
 		resultView = (ListView)findViewById(R.id.resultListView);
+		spinner = (ProgressBar)findViewById(R.id.progressBar);
 		save_product = new FileManager(savePath + "/SaveProduct.txt");
 
 		MessageHandler = new Handler() {
@@ -67,6 +74,7 @@ public class ShoppingCart extends ActionBarActivity {
 				switch (msg.what) {
 				case SendToServer.SUCCESS:
 					product_set = (ArrayList<Product>) SerializationUtils.deserialize((byte[])msg.obj);
+					spinner.setVisibility(View.GONE);
 					setListView();
 					rewriteShoppingCart();
 					Toast.makeText(getApplicationContext(), "Get Product Success", Toast.LENGTH_SHORT).show();
@@ -148,6 +156,38 @@ public class ShoppingCart extends ActionBarActivity {
 		new SendToServer(SendToServer.MessagePort, command,
 				MessageHandler, SendToServer.GET_PRODUCT).start();
 	}
+	
+    public class LoadImageThread extends AsyncTask <Product, Void , Bitmap> {
+		
+		private Product load_P;
+		private ImageView img;
+		
+		public LoadImageThread(ImageView img) {
+			this.img = img;
+		}
+		@Override 
+		protected Bitmap doInBackground(Product... params) {
+			load_P = params[0];
+			Bitmap bm = null;
+			if(productMap.get(load_P.productID) == null) {
+				byte [] pPhoto = load_P.productPhoto;
+				bm = BitmapFactory.decodeByteArray(pPhoto, 0, pPhoto.length , null);
+				productMap.put(load_P.productID,Bitmap.createScaledBitmap(bm, 200, 200 , false));
+				//Log.d("firstLoadView", load_P.productName);
+			}
+			else {
+				//Log.d("secondLoadView", load_P.productName);
+				bm = productMap.get(load_P.productID);
+			}
+			return bm;
+		}
+		@Override
+		protected void onPostExecute(Bitmap result) {
+			
+			super.onPostExecute(result);
+			img.setImageBitmap(result);
+		}
+	}
 
 	class ProductAdapter extends BaseAdapter {
 
@@ -205,10 +245,10 @@ public class ShoppingCart extends ActionBarActivity {
 			byte [] pPhoto = product_set.get(position).productPhoto;
 			Bitmap bm = BitmapFactory.decodeByteArray(pPhoto, 0,
 					pPhoto.length, null);
-			vi.productPhoto.setImageBitmap(getResizedBitmap(bm,100,100));
+			//vi.productPhoto.setImageBitmap(getResizedBitmap(bm,100,100));
 			vi.productName.setText(product_set.get(position).productName);
 			vi.productPrice.setText(String.valueOf(product_set.get(position).productPrice));
-			
+			new LoadImageThread(pViewHolder.productPhoto).execute(product_set.get(position));
 			return convertView;
 		}
 	}

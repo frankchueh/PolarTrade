@@ -3,55 +3,94 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" 
-    tools:context="com.example.project_ver1.mainActivity">
+    android:background="@color/wallet_holo_blue_light"
+    android:orientation="vertical"
+    tools:context="com.example.project_ver1.mainActivity" >
 
-    <Button
-        android:id="@+id/btnUserInfo"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Userinfo" />
+        android:layout_marginTop="50dip"
+        android:backgroundTint="@color/wallet_holo_blue_light"
+        android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/btnChatroomList"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ChatroomList" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
 
-    <Button
-        android:id="@+id/btnShoppingCart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Shopping cart" />
+            <Button
+                android:id="@+id/btnProductUpload"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_marginLeft="70dip"
+                android:background="@drawable/product_upload" />
 
-    <Button
-        android:id="@+id/btnProductUpload"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Product upload" />
+            <Button
+                android:id="@+id/btnUserInfo"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:background="@drawable/user_info" />
 
-    <Button
-        android:id="@+id/btnStartService"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start service" />
+        </LinearLayout>
 
-    <Button
-        android:id="@+id/btnQuitService"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="quit service" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <Button
-        android:id="@+id/btnProductManage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ProductManage" />
+            <Button
+                android:id="@+id/btnProductManage"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_marginLeft ="-5dip"
+                android:background="@drawable/product_manage" />
 
-    <Button
-        android:id="@+id/btnSearchProduct"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:text="Search Product" />
+            <Button
+                android:id="@+id/btnShoppingCart"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:background="@drawable/shop_cart" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="65dip"
+        android:background="@drawable/clash_ice" >
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+		android:background="#FFFFFF">
+
+        <Button
+            android:id="@+id/btnSearchProduct"
+            android:layout_width="90dp"
+            android:layout_height="55dp"
+            android:background="@drawable/search" />
+
+        <Button
+            android:id="@+id/btnChatroomList"
+            android:layout_width="90dp"
+            android:layout_height="55dp"
+            android:background="@drawable/chat"/>
+
+        <Button
+            android:id="@+id/btnStartService"
+            android:layout_width="90dp"
+            android:layout_height="55dp"
+            android:background="@drawable/location_off" />
+
+        <Button
+            android:id="@+id/btnQuitService"
+            android:layout_width="90dp"
+            android:layout_height="55dp"
+            android:background="@drawable/map_location" />
+
+    </LinearLayout>
 
 </LinearLayout>
