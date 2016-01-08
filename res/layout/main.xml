@@ -86,7 +86,7 @@
             android:background="@drawable/location_off" />
 
         <Button
-            android:id="@+id/btnQuitService"
+            android:id="@+id/btnStartMap"
             android:layout_width="90dp"
             android:layout_height="55dp"
             android:background="@drawable/map_location" />

@@ -39,7 +39,7 @@ public class SendToServer extends Thread {
 			NO_MESSAGE = 2011 , DELETE_SUCCESS = 2012 , DELETE_FAIL = 2013, 
 			GET_SEARCH_RESULT = 2014, NO_SEARCH_RESULT = 2015,
 			GET_LOCATE_SUCCESS = 2016, GET_LOCATE_FAIL = 2017,
-			UPDATE_MESSAGE_SUCCESS = 2018;
+			UPDATE_MESSAGE_SUCCESS = 2018 , GET_AROUND_USER = 2019;
 	
 	String address = "140.118.125.229"; // Serverªºaddress
 //	String address = "192.168.0.102";
@@ -397,6 +397,26 @@ public class SendToServer extends Thread {
 					return_msg.what = SUCCESS;
 					ois.close();
 				} else{
+					return_msg.what = FAIL;
+				}
+				break;
+			
+			case GET_AROUND_USER :
+				pw.println(msg.toString());
+				String Locate_msg = br.readLine();
+				if(Locate_msg.equals("success"))
+				{
+					ObjectInputStream ois = new ObjectInputStream(
+							client.getInputStream());
+					return_msg.what = GET_SEARCH_RESULT;
+					return_msg.obj = ois.readObject().toString();
+				}
+				else if (Locate_msg.equals("no result"))
+				{
+					return_msg.what = NO_SEARCH_RESULT;
+				}
+				else
+				{
 					return_msg.what = FAIL;
 				}
 				break;
