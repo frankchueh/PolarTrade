@@ -35,27 +35,32 @@
 
                 <TextView
                     android:id="@+id/txtUserAccountLabel"
+                    style="@style/TitleTextview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="帳戶名稱"
-                    android:layout_marginTop="30dip"
                     android:layout_marginLeft="30dip"
+                    android:layout_marginTop="30dip"
+                    android:text="帳戶名稱"
                     android:textSize="20sp" />
+
                 <TextView
                     android:id="@+id/txtUserAccount"
+                    style="@style/ContextTextview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="TextView"
-                    android:textColor="#FFFFFF"
                     android:layout_marginLeft="30dip"
+                    android:text="TextView"
                     android:textSize="15sp" />
+
                 <TextView
                     android:id="@+id/txtUserNameLabel"
+                    style="@style/TitleTextview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="姓名"
                     android:layout_marginLeft="30dip"
+                    android:text="姓名"
                     android:textSize="20sp" />
+
                 <TextView
                     android:id="@+id/txtUserName"
                     android:layout_width="wrap_content"
@@ -64,13 +69,16 @@
                     android:textColor="#FFFFFF"
                     android:layout_marginLeft="30dip"
                     android:textSize="15sp" />
+
                 <TextView
                     android:id="@+id/txtUserAgeLabel"
+                    style="@style/TitleTextview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="年齡"
                     android:layout_marginLeft="30dip"
+                    android:text="年齡"
                     android:textSize="20sp" />
+
                 <TextView
                     android:id="@+id/txtUserAge"
                     android:layout_width="wrap_content"
@@ -79,13 +87,16 @@
                     android:textColor="#FFFFFF"
                     android:layout_marginLeft="30dip"
                     android:textSize="15sp" />
+
                 <TextView
                     android:id="@+id/txtUserBirthLabel"
+                    style="@style/TitleTextview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="出生年月日"
                     android:layout_marginLeft="30dip"
+                    android:text="出生年月日"
                     android:textSize="20sp" />
+
                 <TextView
                     android:id="@+id/txtUserBirth"
                     android:layout_width="wrap_content"
@@ -94,13 +105,16 @@
                     android:textColor="#FFFFFF"
                     android:layout_marginLeft="30dip"
                     android:textSize="15sp" />
+
                 <TextView
                     android:id="@+id/txtUserGenderLabel"
+                    style="@style/TitleTextview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="性別"
                     android:layout_marginLeft="30dip"
+                    android:text="性別"
                     android:textSize="20sp" />
+
                 <TextView
                     android:id="@+id/txtUserGender"
                     android:layout_width="wrap_content"
@@ -109,13 +123,16 @@
                     android:textColor="#FFFFFF"
                     android:layout_marginLeft="30dip"
                     android:textSize="15sp" />
+
                 <TextView
                     android:id="@+id/txtUserMobileLabel"
+                    style="@style/TitleTextview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="手機號碼"
                     android:layout_marginLeft="30dip"
+                    android:text="手機號碼"
                     android:textSize="20sp" />
+
                 <TextView
                     android:id="@+id/txtUserMobile"
                     android:layout_width="wrap_content"
@@ -124,13 +141,16 @@
                     android:textColor="#FFFFFF"
                     android:layout_marginLeft="30dip"
                     android:textSize="15sp" />
+
                 <TextView
                     android:id="@+id/txtUserEmailLabel"
+                    style="@style/TitleTextview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Email"
                     android:layout_marginLeft="30dip"
+                    android:text="Email"
                     android:textSize="20sp" />
+
                 <TextView
                     android:id="@+id/txtUserEmail"
                     android:layout_width="wrap_content"

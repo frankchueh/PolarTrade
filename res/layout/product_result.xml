@@ -10,10 +10,14 @@
        android:background="@color/wallet_holo_blue_light" >
 
        <ImageView
-           android:id="@+id/productPhoto"       
-           android:layout_width="80dp"
-           android:layout_height="80dp"
+           android:id="@+id/productPhoto"
+           android:layout_width="100dp"
+           android:layout_height="100dp"
            android:layout_gravity="left"
+           android:layout_marginBottom="5dp"
+           android:layout_marginLeft="5dp"
+           android:layout_marginTop="5dp"
+           android:scaleType="centerCrop"
            android:src="@drawable/placeholder" />
 
        <LinearLayout
@@ -26,19 +30,22 @@
                android:id="@+id/productName"
                android:layout_width="match_parent"
                android:layout_height="wrap_content"
+               android:layout_marginLeft="5dp"
                android:text="Large Text"
+               android:textAppearance="?android:attr/textAppearanceLarge"
                android:textColor="#FFFFFF"
-               android:textSize="25sp"
-               android:textAppearance="?android:attr/textAppearanceLarge" />
+               android:textSize="25sp" />
 
            <TextView
                android:id="@+id/productPrice"
                android:layout_width="match_parent"
                android:layout_height="wrap_content"
+               android:layout_marginLeft="5dp"
                android:text="Large Text"
+               android:textAppearance="?android:attr/textAppearanceLarge"
                android:textColor="#FFFFFF"
-               android:textSize="20sp"
-               android:textAppearance="?android:attr/textAppearanceLarge" />
+               android:textSize="20sp" />
+
        </LinearLayout>
    </LinearLayout>
     

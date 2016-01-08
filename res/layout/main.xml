@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dip"
+        android:layout_weight="0.50"
         android:backgroundTint="@color/wallet_holo_blue_light"
         android:orientation="vertical" >
 
@@ -30,18 +31,17 @@
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:background="@drawable/user_info" />
-
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content" >
 
             <Button
                 android:id="@+id/btnProductManage"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:layout_marginLeft ="-5dip"
+                android:layout_marginLeft="-5dip"
                 android:background="@drawable/product_manage" />
 
             <Button
@@ -49,46 +49,42 @@
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:background="@drawable/shop_cart" />
-
         </LinearLayout>
-
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginTop="65dip"
+        android:layout_height="71dp"
+        android:layout_gravity="bottom"
+        android:layout_weight="0.36"
         android:background="@drawable/clash_ice" >
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
-		android:background="#FFFFFF">
 
         <Button
             android:id="@+id/btnSearchProduct"
             android:layout_width="90dp"
             android:layout_height="55dp"
+            android:layout_gravity="bottom"
             android:background="@drawable/search" />
 
         <Button
             android:id="@+id/btnChatroomList"
             android:layout_width="90dp"
             android:layout_height="55dp"
-            android:background="@drawable/chat"/>
+            android:layout_gravity="bottom"
+            android:background="@drawable/chat" />
 
         <Button
             android:id="@+id/btnStartService"
             android:layout_width="90dp"
             android:layout_height="55dp"
+            android:layout_gravity="bottom"
             android:background="@drawable/location_off" />
 
         <Button
             android:id="@+id/btnQuitService"
             android:layout_width="90dp"
             android:layout_height="55dp"
+            android:layout_gravity="bottom"
             android:background="@drawable/map_location" />
 
     </LinearLayout>

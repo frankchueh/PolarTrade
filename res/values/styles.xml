@@ -21,6 +21,19 @@
     <style name="AppTheme.Base" parent="Theme.AppCompat">
   		<item name="windowActionBar">false</item>
   		<item name="android:windowNoTitle">true</item>
-	</style>
+        <item name="android:windowFullscreen">true</item>
+  	</style>
+	
+    <style name="TitleTextview">
+        <item name="android:textColor">@color/Black</item>
+    </style>
+    
+    <style name="ContextTextview">
+        <item name="android:textColor">@color/White</item>
+    </style>
+    
+    <style name="ContextLayout">
+    	<item name="android:background">@drawable/context_background</item>
+    </style>
 
 </resources>
