@@ -78,7 +78,7 @@ public class SearchProduct extends ActionBarActivity {
 						pid += tem.split(":")[1];
 					}
 //					Toast.makeText(getApplicationContext(), msg.obj.toString(), Toast.LENGTH_SHORT).show();
-					command = "getProduct\n" + pid + "\n";
+					command = "getCompressProduct\n" + pid + "\n";
 					new SendToServer(SendToServer.MessagePort, command,
 							MessageHandler, SendToServer.GET_PRODUCT).start();
 					break;
@@ -179,7 +179,7 @@ public class LoadImageThread extends AsyncTask <Product, Void , Bitmap> {
 			if(productMap.get(load_P.productID) == null) {
 				byte [] pPhoto = load_P.productPhoto;
 				bm = BitmapFactory.decodeByteArray(pPhoto, 0, pPhoto.length , null);
-				productMap.put(load_P.productID,Bitmap.createScaledBitmap(bm, 200, 200 , false));
+				productMap.put(load_P.productID, bm);
 				//Log.d("firstLoadView", load_P.productName);
 			}
 			else {
@@ -239,10 +239,10 @@ public class LoadImageThread extends AsyncTask <Product, Void , Bitmap> {
 							
 				DisplayMetrics dm = new DisplayMetrics();
 				getWindowManager().getDefaultDisplay().getMetrics(dm);
-				int t_width = dm.widthPixels/3;
-				int t_height = dm.heightPixels/4;
-				pViewHolder.productPhoto.setMinimumHeight(t_height);
-				pViewHolder.productPhoto.setMinimumWidth(t_width);
+//				int t_width = dm.widthPixels/3;
+//				int t_height = dm.heightPixels/4;
+//				pViewHolder.productPhoto.setMinimumHeight(t_height);
+//				pViewHolder.productPhoto.setMinimumWidth(t_width);
 				
 				convertView.setTag(pViewHolder);
 			}
@@ -258,21 +258,21 @@ public class LoadImageThread extends AsyncTask <Product, Void , Bitmap> {
 		}
 	}
 	
-	public Bitmap getResizedBitmap(Bitmap bm , int new_width , int new_height) {
-		// 重新設定商品圖片大小
-		int width = bm.getWidth();
-		int height = bm.getHeight();
-		float scaleWidth = ((float) new_width) / width;    // 計算縮放大小
-		float scaleHeight = ((float) new_height) / height;
-		
-		Matrix m = new Matrix();
-		m.postScale(scaleWidth, scaleHeight);
-		Bitmap resizedBitmap = Bitmap.createBitmap(bm,0,0,width,height,m,false);
-		
-		bm.recycle();
-		
-		return resizedBitmap;
-	}
+//	public Bitmap getResizedBitmap(Bitmap bm , int new_width , int new_height) {
+//		// 重新設定商品圖片大小
+//		int width = bm.getWidth();
+//		int height = bm.getHeight();
+//		float scaleWidth = ((float) new_width) / width;    // 計算縮放大小
+//		float scaleHeight = ((float) new_height) / height;
+//		
+//		Matrix m = new Matrix();
+//		m.postScale(scaleWidth, scaleHeight);
+//		Bitmap resizedBitmap = Bitmap.createBitmap(bm,0,0,width,height,m,false);
+//		
+//		bm.recycle();
+//		
+//		return resizedBitmap;
+//	}
 	
 	public File savePhoto (Bitmap bm , int pid) throws IOException {	// 將照片存到內存路徑
 		
