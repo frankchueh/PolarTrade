@@ -210,7 +210,6 @@ OnMapReadyCallback {
 			
 			MarkerOptions markerOpt = new MarkerOptions().title(usr_name); // 再加上新的marker
 	    	markerOpt.position(new LatLng(lat,lng));
-	    	markerOpt.title("present locate");
 	    	newMarker = polarMap.addMarker(markerOpt);
 		}
 		 

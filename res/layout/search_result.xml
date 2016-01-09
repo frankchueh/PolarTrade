@@ -26,6 +26,7 @@
                android:layout_width="match_parent"
                android:layout_height="wrap_content"
                android:text="Large Text"
+               android:textColor="#FFFFFF"
                android:textAppearance="?android:attr/textAppearanceLarge" />
 
            <TextView
@@ -33,6 +34,7 @@
                android:layout_width="match_parent"
                android:layout_height="wrap_content"
                android:text="Large Text"
+               android:textColor="#FFFFFF"
                android:textAppearance="?android:attr/textAppearanceLarge" />
        </LinearLayout>
    </LinearLayout>
