@@ -13,6 +13,8 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,7 +34,7 @@ public class ProductInfo extends ActionBarActivity {
 	private ImageView ProductImage;
 	private Button productEditButton, btnChat, btnSaveProduct;
 	LinearLayout buyerLayout,sellerLayout;
-	
+	Handler MessageHandler;
 	String savePath = Environment.getExternalStorageDirectory().getPath()+"/PolarTrade";
 	ArrayList<String> productIds;
 	FileManager save_product;
@@ -85,7 +87,7 @@ public class ProductInfo extends ActionBarActivity {
 		else
 			btnSaveProduct.setText("放入購物車");
 		
-		try {
+		/*try {
 			orgUri = Uri.parse(bu.getString("photo"));
 			ContentResolver contentResolver = getContentResolver();
 			mContent = readStream(contentResolver.openInputStream(orgUri));
@@ -94,7 +96,36 @@ public class ProductInfo extends ActionBarActivity {
 			ProductImage.setImageBitmap(bm);
 			} catch(Exception e) {
 					e.printStackTrace();
+			}*/
+		MessageHandler = new Handler() {
+
+			public void handleMessage(Message msg) {
+				switch (msg.what) {
+
+				case SendToServer.SUCCESS_GET_PHOTO:
+					mContent = (byte[]) msg.obj;
+					Bitmap bm = BitmapFactory.decodeByteArray(mContent, 0,
+							mContent.length, null);
+					ProductImage.setImageBitmap(bm);
+					break;
+				case SendToServer.FAIL:
+					Toast.makeText(getApplicationContext(), "Get Info Fail",
+							Toast.LENGTH_SHORT).show();
+					break;
+
+				case SendToServer.SERVER_ERROR:
+					Toast.makeText(getApplicationContext(),
+							"Server not response", Toast.LENGTH_SHORT).show();
+					break;
+				}
+				super.handleMessage(msg);
 			}
+		};
+		
+		String msg_getphoto = "GetPhoto" + "\n" +
+							  "C:/DataBase/product/"+ pid +"/" + "photo.jpg";
+		new SendToServer(SendToServer.PhotoPort, msg_getphoto,
+				MessageHandler, SendToServer.GET_PHOTO).start(); // 傳到server並抓取圖片
 		
 	}
 	

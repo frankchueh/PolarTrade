@@ -9,5 +9,7 @@
     <string name="title_activity_product_edit">ProductEdit</string>
     <string name="title_activity_product_info">ProductInfo</string>
     <string name="action_delete">Edit</string>
+    <string name="title_activity_map_locate">MapLocate</string>
+    <string name="refresh_string">Refresh</string>
 
 </resources>

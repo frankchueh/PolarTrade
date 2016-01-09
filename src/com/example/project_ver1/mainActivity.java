@@ -13,7 +13,7 @@ import android.view.MenuItem;
 public class mainActivity extends ActionBarActivity {
 
 	Button btnUserInfo, btnChatroomList, btnProductUpload, btnStartService,
-			btnQuitService, btnProductManage, btnSearchProduct, btnShoppingCart;
+			btnStartMapMode, btnProductManage, btnSearchProduct, btnShoppingCart;
 	public static String Account; // ¨Ï¥ÎªÌ±b¤á
 	private static final int STOP_SERVICE = 0 , START_SERVICE = 1;
 	private int service_state = STOP_SERVICE;
@@ -27,7 +27,7 @@ public class mainActivity extends ActionBarActivity {
 		btnChatroomList = (Button) this.findViewById(R.id.btnChatroomList);
 		btnProductUpload = (Button) this.findViewById(R.id.btnProductUpload);
 		btnStartService = (Button) this.findViewById(R.id.btnStartService);
-		btnQuitService = (Button) this.findViewById(R.id.btnQuitService);
+		btnStartMapMode = (Button) this.findViewById(R.id.btnStartMap);
 		btnProductManage = (Button) this.findViewById(R.id.btnProductManage);
 		btnSearchProduct = (Button) this.findViewById(R.id.btnSearchProduct);
 		btnShoppingCart = (Button) this.findViewById(R.id.btnShoppingCart);
@@ -104,15 +104,16 @@ public class mainActivity extends ActionBarActivity {
 			}
 		});
 
-		/*btnQuitService.setOnClickListener(new Button.OnClickListener() {
+		btnStartMapMode.setOnClickListener(new Button.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent(mainActivity.this, GetPosition.class);
-				stopService(intent);
+				Intent it = new Intent();
+				it.setClass(mainActivity.this, MapLocate.class);
+				startActivity(it);
 			}
-		});*/
+		});
 
 		btnProductManage.setOnClickListener(new Button.OnClickListener() {
 

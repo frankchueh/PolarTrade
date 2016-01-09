@@ -1,0 +1,35 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LinearLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/wallet_holo_blue_light" 
+    tools:context="com.example.polarmaps.PolarMapsActivity" >
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <fragment
+            android:id="@+id/polarMap"
+            android:layout_width="match_parent"
+            android:layout_height="450dp"
+            class="com.google.android.gms.maps.SupportMapFragment" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/refreshButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="getUserAround"
+            android:text="@string/refresh_string" />
+
+    </LinearLayout>
+
+</LinearLayout>
