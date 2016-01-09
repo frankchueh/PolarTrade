@@ -29,8 +29,8 @@
             <TextView
                 android:id="@+id/productInfo_Name"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" 
-                android:textColor="#FFFFFF"/>
+                android:layout_height="wrap_content"
+                android:textColor="@color/Black" />
 
             <TextView
                 android:id="@+id/productInfo_PriceLabel"
@@ -42,7 +42,8 @@
             <TextView
                 android:id="@+id/productInfo_Price"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:textColor="@color/Black" />
 
             <TextView
                 android:id="@+id/productInfo_PhotoLabel"

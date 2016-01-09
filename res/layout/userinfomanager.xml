@@ -61,9 +61,10 @@
                     android:id="@+id/editUsername"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#FFFFFF"
                     android:ems="10"
-                    android:maxLength="20" />
+                    android:background="#FFFFFF"
+                    android:textColor="@color/Black"
+                    android:maxLength="3" />
 
                 <TextView
                     android:id="@+id/textView2"
@@ -79,6 +80,7 @@
                     android:ems="10"
                     android:background="#FFFFFF"
                     android:inputType="number"
+                    android:textColor="@color/Black"
                     android:maxLength="3" >
 
                     <requestFocus />
@@ -89,6 +91,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#FFFFFF"
+                    android:textColor="@color/Black"
                     android:text="性別" />
 
                 <RadioGroup
@@ -127,6 +130,7 @@
                     android:ems="10"
                     android:inputType="phone"
                     android:background="#FFFFFF"
+                    android:textColor="@color/Black"
                     android:maxLength="10" />
 
                 <TextView
@@ -143,6 +147,7 @@
                     android:ems="10"
                     android:inputType="textWebEmailAddress"
                     android:background="#FFFFFF"
+                    android:textColor="@color/Black"
                     android:maxLength="50" />
 
                 <TextView
