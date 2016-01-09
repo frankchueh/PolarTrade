@@ -48,7 +48,7 @@ public class ProductInfo extends ActionBarActivity {
 	
 	Uri orgUri = null;
 	byte [] mContent = null;
-	
+	private int whether_update;
 	public static final int EDIT_PRODUCT = 1111;
 	
 	@Override
@@ -126,7 +126,7 @@ public class ProductInfo extends ActionBarActivity {
 							  "C:/DataBase/product/"+ pid +"/" + "photo.jpg";
 		new SendToServer(SendToServer.PhotoPort, msg_getphoto,
 				MessageHandler, SendToServer.GET_PHOTO).start(); // 傳到server並抓取圖片
-		
+		whether_update = ProductManage.UPDATE_CANCEL;
 	}
 	
 	@Override
@@ -138,10 +138,12 @@ public class ProductInfo extends ActionBarActivity {
 		bu.putString("name", productName);					// 新名字
 		bu.putInt("price", productPrice); // 新價格
 		bu.putByteArray("info",productInfo.getBytes());		// 新商品資訊
-		bu.putString("photo", orgUri.toString());
 		
 		it.putExtras(bu);
-		setResult(ProductManage.UPDATE_SUCCESS , it);
+		if(whether_update == ProductManage.UPDATE_SUCCESS) {
+			bu.putString("photo", orgUri.toString());
+			setResult(ProductManage.UPDATE_SUCCESS , it);
+		}
 		finish();
 	}
 	
@@ -239,6 +241,7 @@ public class ProductInfo extends ActionBarActivity {
 			ProductName.setText(productName);
 			ProductPrice.setText(String.valueOf(productPrice));
 			ProductDetailInfo.setText(productInfo);
+			whether_update = ProductManage.UPDATE_SUCCESS;
 		}
 		
 	}

@@ -119,7 +119,9 @@ public class ProductManage extends ActionBarActivity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				File pfile = null;
+				Intent it = new Intent();
+				Bundle bu = new Bundle();
+				/*File pfile = null;
 				Intent it = new Intent();
 				Bundle bu = new Bundle();
 				Bitmap bm = BitmapFactory.decodeByteArray(product_set.get(position).productPhoto, 0,
@@ -131,13 +133,13 @@ public class ProductManage extends ActionBarActivity {
 					e.printStackTrace();
 				}
 				bm.recycle();
-				u = Uri.fromFile(pfile);
+				u = Uri.fromFile(pfile);*/
 				bu.putString("user", "seller");
 				bu.putInt("id", product_set.get(position).productID);
 				bu.putString("name",product_set.get(position).productName);  // 傳遞商品名稱
 				bu.putInt("price",product_set.get(position).productPrice);   // 商品價格
 				bu.putByteArray("info", product_set.get(position).productInfo);  // 商品資訊
-				bu.putString("photo",u.toString());   // 商品圖片超連結
+				//bu.putString("photo",u.toString());   // 商品圖片超連結
 				
 				it.putExtras(bu);
 				it.setClass(ProductManage.this,ProductInfo.class);
