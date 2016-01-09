@@ -239,11 +239,6 @@ public class LoadImageThread extends AsyncTask <Product, Void , Bitmap> {
 							
 				DisplayMetrics dm = new DisplayMetrics();
 				getWindowManager().getDefaultDisplay().getMetrics(dm);
-//				int t_width = dm.widthPixels/3;
-//				int t_height = dm.heightPixels/4;
-//				pViewHolder.productPhoto.setMinimumHeight(t_height);
-//				pViewHolder.productPhoto.setMinimumWidth(t_width);
-				
 				convertView.setTag(pViewHolder);
 			}
 			else {
@@ -258,21 +253,6 @@ public class LoadImageThread extends AsyncTask <Product, Void , Bitmap> {
 		}
 	}
 	
-//	public Bitmap getResizedBitmap(Bitmap bm , int new_width , int new_height) {
-//		// 重新設定商品圖片大小
-//		int width = bm.getWidth();
-//		int height = bm.getHeight();
-//		float scaleWidth = ((float) new_width) / width;    // 計算縮放大小
-//		float scaleHeight = ((float) new_height) / height;
-//		
-//		Matrix m = new Matrix();
-//		m.postScale(scaleWidth, scaleHeight);
-//		Bitmap resizedBitmap = Bitmap.createBitmap(bm,0,0,width,height,m,false);
-//		
-//		bm.recycle();
-//		
-//		return resizedBitmap;
-//	}
 	
 	public File savePhoto (Bitmap bm , int pid) throws IOException {	// 將照片存到內存路徑
 		

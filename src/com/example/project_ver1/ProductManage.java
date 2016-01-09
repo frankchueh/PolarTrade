@@ -1,16 +1,10 @@
 package com.example.project_ver1;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.StreamCorruptedException;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -21,12 +15,8 @@ import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -35,7 +25,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -195,7 +184,7 @@ public class ProductManage extends ActionBarActivity {
 			if(productMap.get(load_P.productID) == null) {
 				byte [] pPhoto = load_P.productPhoto;
 				bm = BitmapFactory.decodeByteArray(pPhoto, 0, pPhoto.length , null);
-				productMap.put(load_P.productID,Bitmap.createScaledBitmap(bm, 200, 200 , false));
+				productMap.put(load_P.productID, bm);
 				//Log.d("firstLoadView", load_P.productName);
 			}
 			else {
@@ -258,10 +247,6 @@ public class ProductManage extends ActionBarActivity {
 				
 				DisplayMetrics dm = new DisplayMetrics();
 				getWindowManager().getDefaultDisplay().getMetrics(dm);
-				int t_width = dm.widthPixels/3;
-				int t_height = dm.heightPixels/4;
-				pViewHolder.productPhoto.setMinimumHeight(t_height);
-				pViewHolder.productPhoto.setMinimumWidth(t_width);
 
 				pViewHolder.deleteProduct.setOnClickListener(new Button.OnClickListener() {
 					@Override
@@ -307,23 +292,6 @@ public class ProductManage extends ActionBarActivity {
 			new LoadImageThread(pViewHolder.productPhoto).execute(product_set.get(position));
 			return convertView;
 		}
-	}
-	
-	
-	public Bitmap getResizedBitmap(Bitmap bm , int new_width , int new_height) {
-		// 重新設定商品圖片大小
-		int width = bm.getWidth();
-		int height = bm.getHeight();
-		float scaleWidth = ((float) new_width) / width;    // 計算縮放大小
-		float scaleHeight = ((float) new_height) / height;
-		
-		Matrix m = new Matrix();
-		m.postScale(scaleWidth, scaleHeight);
-		Bitmap resizedBitmap = Bitmap.createBitmap(bm,0,0,width,height,m,false);
-		
-		bm.recycle();
-		
-		return resizedBitmap;
 	}
 	
 	public File savePhoto (Bitmap bm , int pid) throws IOException {	// 將照片存到內存路徑

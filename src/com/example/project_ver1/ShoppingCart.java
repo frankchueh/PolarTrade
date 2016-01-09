@@ -147,7 +147,7 @@ public class ShoppingCart extends ActionBarActivity {
 		// TODO Auto-generated method stub
 		super.onResume();
 		String[] pids = save_product.readAllLine();
-		command = "getProduct\n";
+		command = "getCompressProduct\n";
 		for(String pid:pids)
 		{
 			command += pid + ",";
@@ -172,7 +172,7 @@ public class ShoppingCart extends ActionBarActivity {
 			if(productMap.get(load_P.productID) == null) {
 				byte [] pPhoto = load_P.productPhoto;
 				bm = BitmapFactory.decodeByteArray(pPhoto, 0, pPhoto.length , null);
-				productMap.put(load_P.productID,Bitmap.createScaledBitmap(bm, 200, 200 , false));
+				productMap.put(load_P.productID, bm);
 				//Log.d("firstLoadView", load_P.productName);
 			}
 			else {
@@ -232,11 +232,6 @@ public class ShoppingCart extends ActionBarActivity {
 							
 				DisplayMetrics dm = new DisplayMetrics();
 				getWindowManager().getDefaultDisplay().getMetrics(dm);
-				int t_width = dm.widthPixels/3;
-				int t_height = dm.heightPixels/4;
-				pViewHolder.productPhoto.setMinimumHeight(t_height);
-				pViewHolder.productPhoto.setMinimumWidth(t_width);
-				
 				convertView.setTag(pViewHolder);
 			}
 			
@@ -245,28 +240,11 @@ public class ShoppingCart extends ActionBarActivity {
 			byte [] pPhoto = product_set.get(position).productPhoto;
 			Bitmap bm = BitmapFactory.decodeByteArray(pPhoto, 0,
 					pPhoto.length, null);
-			//vi.productPhoto.setImageBitmap(getResizedBitmap(bm,100,100));
 			vi.productName.setText(product_set.get(position).productName);
 			vi.productPrice.setText(String.valueOf(product_set.get(position).productPrice));
 			new LoadImageThread(pViewHolder.productPhoto).execute(product_set.get(position));
 			return convertView;
 		}
-	}
-	
-	public Bitmap getResizedBitmap(Bitmap bm , int new_width , int new_height) {
-		// 重新設定商品圖片大小
-		int width = bm.getWidth();
-		int height = bm.getHeight();
-		float scaleWidth = ((float) new_width) / width;    // 計算縮放大小
-		float scaleHeight = ((float) new_height) / height;
-		
-		Matrix m = new Matrix();
-		m.postScale(scaleWidth, scaleHeight);
-		Bitmap resizedBitmap = Bitmap.createBitmap(bm,0,0,width,height,m,false);
-		
-		bm.recycle();
-		
-		return resizedBitmap;
 	}
 	
 	public File savePhoto (Bitmap bm , int pid) throws IOException {	// 將照片存到內存路徑
