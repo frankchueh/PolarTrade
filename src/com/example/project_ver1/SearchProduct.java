@@ -28,56 +28,56 @@ import android.view.ViewGroup;
 import android.widget.*;
 
 public class SearchProduct extends ActionBarActivity {
-	
+
 	private ListView resultView;
 	private ProgressBar spinner;
 	ProductAdapter productAdapter;
 	Button btnSearch;
-	
+
 	private File mpPhoto;
 	private File ProductPhotoDir = new File(
 			Environment.getExternalStorageDirectory() + "/DCIM/ProductPhoto");
-	
-	ArrayList <Product> product_set = new ArrayList <Product>();
-	ArrayList <File> photo_set = new ArrayList <File>();
+
+	ArrayList<Product> product_set = new ArrayList<Product>();
+	ArrayList<File> photo_set = new ArrayList<File>();
 	FileOutputStream fos = null;
 	Uri u = null;
 
-	int p_num = 0;  // 總商品數量
+	int p_num = 0; // 總商品數量
 	double[] position;
 	Handler MessageHandler;
 	String command;
-	public HashMap<Integer,Bitmap> productMap = new HashMap<Integer,Bitmap>();
-	
+	public HashMap<Integer, Bitmap> productMap = new HashMap<Integer, Bitmap>();
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_product_search);
-		resultView = (ListView)findViewById(R.id.resultListView);
-		btnSearch = (Button)findViewById(R.id.btnSearch);
-		spinner = (ProgressBar)findViewById(R.id.searchingSpinner);
-		
+		resultView = (ListView) findViewById(R.id.resultListView);
+		btnSearch = (Button) findViewById(R.id.btnSearch);
+		spinner = (ProgressBar) findViewById(R.id.searchingSpinner);
+
 		MessageHandler = new Handler() {
 			public void handleMessage(Message msg) {
 				switch (msg.what) {
 				case SendToServer.GET_LOCATE_SUCCESS:
 					position = (double[]) msg.obj;
-//					Toast.makeText(getApplicationContext(), ""+position[0]+","+position[1], Toast.LENGTH_SHORT).show();
-					command = "searchProduct\n" + position[0]+ "\n" + position[1] + "\n" + mainActivity.Account;
+					command = "searchProduct\n" + position[0] + "\n"
+							+ position[1] + "\n" + mainActivity.Account;
 					new SendToServer(SendToServer.MessagePort, command,
-							MessageHandler, SendToServer.SEARCH_PRODUCT).start();
+							MessageHandler, SendToServer.SEARCH_PRODUCT)
+							.start();
 					break;
 				case SendToServer.GET_LOCATE_FAIL:
-					Toast.makeText(getApplicationContext(), "Get Location fail", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(),
+							"Get Location fail", Toast.LENGTH_SHORT).show();
 					break;
 				case SendToServer.GET_SEARCH_RESULT:
 					String[] result = msg.obj.toString().split("\n");
 					String pid = "";
-					for(String tem:result)
-					{
+					for (String tem : result) {
 						pid += tem.split(":")[1];
 					}
-//					Toast.makeText(getApplicationContext(), msg.obj.toString(), Toast.LENGTH_SHORT).show();
 					command = "getCompressProduct\n" + pid + "\n";
 					new SendToServer(SendToServer.MessagePort, command,
 							MessageHandler, SendToServer.GET_PRODUCT).start();
@@ -85,28 +85,32 @@ public class SearchProduct extends ActionBarActivity {
 				case SendToServer.NO_SEARCH_RESULT:
 					spinner.setVisibility(View.GONE);
 					btnSearch.setVisibility(View.VISIBLE);
-					Toast.makeText(getApplicationContext(), "No Result", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(), "No Result",
+							Toast.LENGTH_SHORT).show();
 					break;
 				case SendToServer.SUCCESS:
-					product_set = (ArrayList<Product>) SerializationUtils.deserialize((byte[])msg.obj);
+					product_set = (ArrayList<Product>) SerializationUtils
+							.deserialize((byte[]) msg.obj);
 					spinner.setVisibility(View.GONE);
 					btnSearch.setVisibility(View.VISIBLE);
 					setListView();
-					Toast.makeText(getApplicationContext(), "Get Product Success", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(),
+							"Get Product Success", Toast.LENGTH_SHORT).show();
 					break;
 				case SendToServer.FAIL:
-					Toast.makeText(getApplicationContext(), "Search product failed", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(),
+							"Search product failed", Toast.LENGTH_SHORT).show();
 					break;
 				}
 				super.handleMessage(msg);
 			}
 		};
-		
-		btnSearch.setOnClickListener(new Button.OnClickListener(){
+
+		btnSearch.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				if(!product_set.isEmpty()) {
+				if (!product_set.isEmpty()) {
 					product_set.clear();
 					productAdapter.notifyDataSetChanged();
 				}
@@ -115,13 +119,14 @@ public class SearchProduct extends ActionBarActivity {
 				new SendToServer(SendToServer.MessagePort, command,
 						MessageHandler, SendToServer.GET_LOCATE).start();
 				btnSearch.setVisibility(View.GONE);
-			}});
-		
+			}
+		});
+
 		spinner.setVisibility(View.GONE);
 	}
-	
+
 	protected void setListView() {
-		
+
 		productAdapter = new ProductAdapter(this);
 		resultView.setAdapter(productAdapter);
 		resultView.setOnItemClickListener(new ListView.OnItemClickListener() {
@@ -132,71 +137,74 @@ public class SearchProduct extends ActionBarActivity {
 				File pfile = null;
 				Intent it = new Intent();
 				Bundle bu = new Bundle();
-				Bitmap bm = BitmapFactory.decodeByteArray(product_set.get(position).productPhoto, 0,
-						product_set.get(position).productPhoto.length,null);
+				Bitmap bm = BitmapFactory.decodeByteArray(
+						product_set.get(position).productPhoto, 0,
+						product_set.get(position).productPhoto.length, null);
 				try {
-					pfile = savePhoto(bm ,product_set.get(position).productID);
+					pfile = savePhoto(bm, product_set.get(position).productID);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				bm.recycle();
 				u = Uri.fromFile(pfile);
-				
+
 				bu.putString("user", "buyer");
 				bu.putInt("id", product_set.get(position).productID);
-				bu.putString("name",product_set.get(position).productName);  // 傳遞商品名稱
-				bu.putInt("price",product_set.get(position).productPrice);   // 商品價格
-				bu.putByteArray("info", product_set.get(position).productInfo);  // 商品資訊
-				bu.putString("photo",u.toString());   // 商品圖片超連結
+				bu.putString("name", product_set.get(position).productName); // 傳遞商品名稱
+				bu.putInt("price", product_set.get(position).productPrice); // 商品價格
+				bu.putByteArray("info", product_set.get(position).productInfo); // 商品資訊
+				bu.putString("photo", u.toString()); // 商品圖片超連結
 				bu.putInt("sellerID", product_set.get(position).userID);
-				
+
 				it.putExtras(bu);
 				it.setClass(SearchProduct.this, ProductInfo.class);
 				startActivity(it);
 			}
-		});		
+		});
 	}
-	
+
 	static class ViewHolder {
 		public TextView productName;
 		public TextView productPrice;
 		public ImageView productPhoto;
 	}
-	
-public class LoadImageThread extends AsyncTask <Product, Void , Bitmap> {
-		
+
+	public class LoadImageThread extends AsyncTask<Product, Void, Bitmap> {
+
 		private Product load_P;
 		private ImageView img;
-		
+
 		public LoadImageThread(ImageView img) {
 			this.img = img;
 		}
-		@Override 
+
+		@Override
 		protected Bitmap doInBackground(Product... params) {
 			load_P = params[0];
 			Bitmap bm = null;
-			if(productMap.get(load_P.productID) == null) {
-				byte [] pPhoto = load_P.productPhoto;
-				bm = BitmapFactory.decodeByteArray(pPhoto, 0, pPhoto.length , null);
+			if (productMap.get(load_P.productID) == null) {
+				byte[] pPhoto = load_P.productPhoto;
+				bm = BitmapFactory.decodeByteArray(pPhoto, 0, pPhoto.length,
+						null);
 				productMap.put(load_P.productID, bm);
-				//Log.d("firstLoadView", load_P.productName);
-			}
-			else {
-				//Log.d("secondLoadView", load_P.productName);
+				// Log.d("firstLoadView", load_P.productName);
+			} else {
+				// Log.d("secondLoadView", load_P.productName);
 				bm = productMap.get(load_P.productID);
 			}
-			
+
 			return bm;
 		}
+
 		@Override
 		protected void onPostExecute(Bitmap result) {
-			
+
 			super.onPostExecute(result);
 			img.setImageBitmap(result);
 		}
 	}
-	
+
 	class ProductAdapter extends BaseAdapter {
 
 		LayoutInflater myInflater;
@@ -208,14 +216,14 @@ public class LoadImageThread extends AsyncTask <Product, Void , Bitmap> {
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
-			
+
 			return product_set.size();
 		}
 
 		@Override
 		public Object getItem(int position) {
 			// TODO Auto-generated method stub
-			
+
 			return product_set.get(position);
 		}
 
@@ -229,48 +237,53 @@ public class LoadImageThread extends AsyncTask <Product, Void , Bitmap> {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			// TODO Auto-generated method stub
 			ViewHolder pViewHolder = null;
-			
-			if(convertView == null) {
-				pViewHolder = new ViewHolder(); 	
-				convertView = myInflater.inflate(R.layout.search_result, parent, false);
-				pViewHolder.productPhoto = (ImageView) convertView.findViewById(R.id.productPhoto);
-				pViewHolder.productName = (TextView) convertView.findViewById(R.id.productName);
-				pViewHolder.productPrice = (TextView) convertView.findViewById(R.id.productPrice);
-							
+
+			if (convertView == null) {
+				pViewHolder = new ViewHolder();
+				convertView = myInflater.inflate(R.layout.search_result,
+						parent, false);
+				pViewHolder.productPhoto = (ImageView) convertView
+						.findViewById(R.id.productPhoto);
+				pViewHolder.productName = (TextView) convertView
+						.findViewById(R.id.productName);
+				pViewHolder.productPrice = (TextView) convertView
+						.findViewById(R.id.productPrice);
+
 				DisplayMetrics dm = new DisplayMetrics();
 				getWindowManager().getDefaultDisplay().getMetrics(dm);
 				convertView.setTag(pViewHolder);
-			}
-			else {
+			} else {
 				pViewHolder = (ViewHolder) convertView.getTag();
 			}
 			// fill data
-			
-			pViewHolder.productName.setText(product_set.get(position).productName);
-			pViewHolder.productPrice.setText(String.valueOf(product_set.get(position).productPrice));
-			new LoadImageThread(pViewHolder.productPhoto).execute(product_set.get(position));
+
+			pViewHolder.productName
+					.setText(product_set.get(position).productName);
+			pViewHolder.productPrice.setText(String.valueOf(product_set
+					.get(position).productPrice));
+			new LoadImageThread(pViewHolder.productPhoto).execute(product_set
+					.get(position));
 			return convertView;
 		}
 	}
-	
-	
-	public File savePhoto (Bitmap bm , int pid) throws IOException {	// 將照片存到內存路徑
-		
+
+	public File savePhoto(Bitmap bm, int pid) throws IOException { // 將照片存到內存路徑
+
 		String localproductFileName = String.valueOf(pid) + ".jpg";
 		ProductPhotoDir.mkdir();
 		mpPhoto = new File(ProductPhotoDir, localproductFileName);
-		
+
 		try {
 			fos = new FileOutputStream(mpPhoto);
-			bm.compress(Bitmap.CompressFormat.JPEG,80,fos);
-		}catch(Exception e) {
+			bm.compress(Bitmap.CompressFormat.JPEG, 80, fos);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		fos.close();
-		
+
 		return mpPhoto;
 	}
-	
+
 	public static byte[] readStream(InputStream in) throws Exception {
 		byte[] buffer = new byte[1024];
 		int len = -1;
@@ -283,6 +296,5 @@ public class LoadImageThread extends AsyncTask <Product, Void , Bitmap> {
 		in.close();
 		return data;
 	}
-	
-}
 
+}
