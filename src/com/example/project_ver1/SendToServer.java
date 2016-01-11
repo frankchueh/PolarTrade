@@ -26,6 +26,7 @@ public class SendToServer extends Thread {
 			UPDATE_MESSAGE = 1015, CHECK_MESSAGE = 1016 , NO_PRODUCTS = 1017,
 			UPDATE_PRODUCT = 1018 , DELETE_PRODUCT = 1019, SEARCH_PRODUCT = 1020,
 			GET_LOCATE = 1021, GET_PRODUCT = 1022,
+			CHECK_MESSAGE_STATE = 1023,
 			SUCCESS = 2001, FAIL = 2002,
 			SERVER_ERROR = 2003, SUCCESS_GET_PHOTO = 2004,
 			SUCCESS_GET_USERINFO = 2005, SUCCESS_GET_CHAT_LIST = 2006,
@@ -34,7 +35,8 @@ public class SendToServer extends Thread {
 			NO_MESSAGE = 2011 , DELETE_SUCCESS = 2012 , DELETE_FAIL = 2013, 
 			GET_SEARCH_RESULT = 2014, NO_SEARCH_RESULT = 2015,
 			GET_LOCATE_SUCCESS = 2016, GET_LOCATE_FAIL = 2017,
-			UPDATE_MESSAGE_SUCCESS = 2018 , GET_AROUND_USER = 2019;
+			UPDATE_MESSAGE_SUCCESS = 2018 , GET_AROUND_USER = 2019,
+			GET_MESSAGE_STATE = 2020;
 	
 	String address = "140.118.125.229"; // Serverªºaddress
 //	String address = "192.168.0.102";
@@ -362,6 +364,21 @@ public class SendToServer extends Thread {
 				}
 				break;
 			
+			case CHECK_MESSAGE_STATE:
+				pw.println(msg.toString());
+				server_msg = br.readLine();
+				
+				if (!server_msg.equals("no message"))
+				{	//format should be (1/0),(1/0),(1/0),.....,\n
+					return_msg.what = GET_MESSAGE_STATE;
+					return_msg.obj = server_msg;
+				}
+				else {
+					return_msg.what = FAIL;
+					return_msg.obj = "Get message state fail.";
+				}
+				break;
+				
 			case SEARCH_PRODUCT:
 				pw.println(msg.toString());
 				String Server_msg = br.readLine();

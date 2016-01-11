@@ -23,6 +23,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.util.DisplayMetrics;
@@ -48,19 +49,30 @@ public class ChatRoomList extends ActionBarActivity {
 	ArrayList<Product> product_B = null;
 	String[] chatID_current = {};
 	ArrayList<Product> product_current = new ArrayList<Product>();
+
 	Handler MessageHandler;
+	HandlerThread GetHandler;
+	Handler workHandler;
+	int DownloadTime = 60000;
 
 	String BchatID_with_comma = "";
 	String SchatID_with_comma = "";
-
+	String chatID_with_comma = "";
+	String[] all_chatID;
+	
 	ChatListAdapter appAdapter;
 	public HashMap<Integer, Bitmap> productMap = new HashMap<Integer, Bitmap>();
+	public HashMap<Integer, String> message_state = new HashMap<Integer, String>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.chatroomlist);
+
+		GetHandler = new HandlerThread("CheckMessageState");
+		GetHandler.start();
+		workHandler = new Handler(GetHandler.getLooper());
 
 		listChatroom = (ListView) this.findViewById(R.id.listChatroom);
 		btnBuyer = (Button) this.findViewById(R.id.btnBuyer);
@@ -94,11 +106,15 @@ public class ChatRoomList extends ActionBarActivity {
 
 			public void handleMessage(Message msg) {
 				switch (msg.what) {
+				
 				case SendToServer.SUCCESS_GET_CHAT_LIST:
 					Toast.makeText(getApplicationContext(), msg.obj.toString(),
 							Toast.LENGTH_SHORT).show();
 					BchatID_with_comma = msg.obj.toString().split("\n")[0];
 					SchatID_with_comma = msg.obj.toString().split("\n")[1];
+					chatID_with_comma = BchatID_with_comma + SchatID_with_comma;
+					all_chatID = chatID_with_comma.split(",");
+					
 					if (!BchatID_with_comma.equals(" ")) {
 						chatID_B = BchatID_with_comma.split(",");
 						String command = "GetChatRoomProduct" + "\n"
@@ -119,8 +135,10 @@ public class ChatRoomList extends ActionBarActivity {
 									.start();
 						}
 					}
-
+					workHandler.post(checkMessageState);
+					
 					break;
+					
 				case SendToServer.SUCCESS:
 					ArrayList<Product> product_set = (ArrayList<Product>) SerializationUtils
 							.deserialize((byte[]) msg.obj);
@@ -140,6 +158,17 @@ public class ChatRoomList extends ActionBarActivity {
 						setListView();
 					}
 					break;
+				case SendToServer.GET_MESSAGE_STATE:
+					if (msg.obj != null) {
+						String[] tem_message_state = msg.obj.toString().split(",");
+						String[] chatID = chatID_with_comma.split(",");
+						for(int index = 0; index < chatID.length; index++)
+						{
+							message_state.put(Integer.parseInt(chatID[index])
+									, tem_message_state[index]);
+						}
+					}
+					break;
 				case SendToServer.FAIL:
 					Toast.makeText(getApplicationContext(), msg.obj.toString(),
 							Toast.LENGTH_SHORT).show();
@@ -153,30 +182,63 @@ public class ChatRoomList extends ActionBarActivity {
 			}
 		};
 
+	}
+
+	Runnable checkMessageState = new Runnable() {
+		@Override
+		public void run() {
+
+			String command = "CheckMessageState" + "\n" + mainActivity.Account
+					+ "\n" + chatID_with_comma;
+			new SendToServer(SendToServer.MessagePort, command, MessageHandler,
+					SendToServer.CHECK_MESSAGE_STATE).start();
+			workHandler.postDelayed(checkMessageState, DownloadTime); // ©µ¿ð«áÄ~Äò¶]
+		}
+	};
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
 		String msg = "ListChatRoom\n" + mainActivity.Account;
 		new SendToServer(SendToServer.MessagePort, msg, MessageHandler,
 				SendToServer.LIST_CHAT_ROOM).start();
-
 	}
-	
-	private void setListView(){
-	appAdapter = new ChatListAdapter(this);
-	listChatroom.setAdapter(appAdapter);
-	listChatroom.setOnItemClickListener(new OnItemClickListener() {
 
-		public void onItemClick(AdapterView<?> parent, View view,
-				int position, long id) {
-			// TODO Auto-generated method stub
-			if (!chatID_current[position].equals("")) {
-				Intent it = new Intent();
-				it.setClass(ChatRoomList.this, Chatroom.class);
-				it.putExtra("chatID",
-						Integer.parseInt(chatID_current[position]));
-				startActivity(it);
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		workHandler.removeCallbacks(checkMessageState);
+		workHandler = null;
+		super.onDestroy();
+	}
+
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		workHandler.removeCallbacks(checkMessageState);
+		super.onPause();
+	}
+
+	private void setListView() {
+		appAdapter = new ChatListAdapter(this);
+		listChatroom.setAdapter(appAdapter);
+		listChatroom.setOnItemClickListener(new OnItemClickListener() {
+
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				// TODO Auto-generated method stub
+				if (!chatID_current[position].equals("")) {
+					Intent it = new Intent();
+					it.setClass(ChatRoomList.this, Chatroom.class);
+					it.putExtra("chatID",
+							Integer.parseInt(chatID_current[position]));
+					startActivity(it);
+				}
 			}
-		}
-	});
+		});
 	}
+
 	static class ViewHolder {
 		public TextView productName;
 		public ImageView productPhoto;
@@ -215,8 +277,10 @@ public class ChatRoomList extends ActionBarActivity {
 
 			if (convertView == null) {
 				pViewHolder = new ViewHolder();
-				convertView = myInflater.inflate(R.layout.chatlistview,
-						parent, false);
+				convertView = myInflater.inflate(R.layout.chatlistview, parent,
+						false);
+				pViewHolder.newMessage = (ImageView) convertView
+						.findViewById(R.id.imgNewMessage);
 				pViewHolder.productPhoto = (ImageView) convertView
 						.findViewById(R.id.imgChatList);
 				pViewHolder.productName = (TextView) convertView
@@ -228,10 +292,17 @@ public class ChatRoomList extends ActionBarActivity {
 			} else {
 				pViewHolder = (ViewHolder) convertView.getTag();
 			}
+			int chatID = Integer.parseInt(all_chatID[position]);
 			
-				pViewHolder.productName
-						.setText(product_current.get(position).productName);
-			new LoadImageThread(pViewHolder.productPhoto).execute(product_current.get(position));
+			if(message_state.get(chatID).equals("1"))
+				pViewHolder.newMessage.setVisibility(View.VISIBLE);
+			else
+				pViewHolder.newMessage.setVisibility(View.INVISIBLE);
+			
+			pViewHolder.productName
+					.setText(product_current.get(position).productName);
+			new LoadImageThread(pViewHolder.productPhoto)
+					.execute(product_current.get(position));
 			return convertView;
 		}
 
