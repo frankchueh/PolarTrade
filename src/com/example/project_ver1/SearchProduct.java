@@ -232,11 +232,11 @@ public class LoadImageThread extends AsyncTask <Product, Void , Bitmap> {
 			
 			if(convertView == null) {
 				pViewHolder = new ViewHolder(); 	
-				convertView = myInflater.inflate(R.layout.search_result, parent, false);
+				convertView = myInflater.inflate(R.layout.productitem, parent, false);
 				pViewHolder.productPhoto = (ImageView) convertView.findViewById(R.id.productPhoto);
 				pViewHolder.productName = (TextView) convertView.findViewById(R.id.productName);
 				pViewHolder.productPrice = (TextView) convertView.findViewById(R.id.productPrice);
-							
+				convertView.findViewById(R.id.deletedProduct).setVisibility(View.GONE);			
 				DisplayMetrics dm = new DisplayMetrics();
 				getWindowManager().getDefaultDisplay().getMetrics(dm);
 				convertView.setTag(pViewHolder);

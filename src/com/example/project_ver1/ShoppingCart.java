@@ -225,11 +225,11 @@ public class ShoppingCart extends ActionBarActivity {
 			if(convertView == null) {
 				
 				pViewHolder = new ViewHolder(); 
-				convertView = myInflater.inflate(R.layout.product_result,null);
+				convertView = myInflater.inflate(R.layout.productitem,null);
 				pViewHolder.productPhoto = (ImageView) convertView.findViewById(R.id.productPhoto);
 				pViewHolder.productName = (TextView) convertView.findViewById(R.id.productName);
 				pViewHolder.productPrice = (TextView) convertView.findViewById(R.id.productPrice);
-							
+				convertView.findViewById(R.id.deletedProduct).setVisibility(View.GONE);			
 				DisplayMetrics dm = new DisplayMetrics();
 				getWindowManager().getDefaultDisplay().getMetrics(dm);
 				convertView.setTag(pViewHolder);

@@ -16,7 +16,7 @@ public class mainActivity extends ActionBarActivity {
 			btnStartMapMode, btnProductManage, btnSearchProduct, btnShoppingCart;
 	public static String Account; // ¨Ï¥ÎªÌ±b¤á
 	private static final int STOP_SERVICE = 0 , START_SERVICE = 1;
-	private int service_state = STOP_SERVICE;
+	private int service_state;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -47,7 +47,7 @@ public class mainActivity extends ActionBarActivity {
 		Intent ChatNoti = new Intent(mainActivity.this, ChatRoomNoti.class);
 		ChatNoti.putExtra("Account", Account);
 		startService(ChatNoti);
-		
+		service_state = STOP_SERVICE;
 		btnUserInfo.setOnClickListener(new Button.OnClickListener() {
 
 			@Override

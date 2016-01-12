@@ -25,6 +25,7 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -57,6 +58,8 @@ OnMapReadyCallback {
 		private String [] search_result;
 		// 第一次攝影機矯正
 		private int first_track;
+		// marker 使用者標的
+		private Marker newMarker;
 		// 建立 Google API 用戶端物件
 		private synchronized void configGoogleApiClient() {
 			mGoogleApiClient = new GoogleApiClient.Builder(this).
@@ -97,7 +100,7 @@ OnMapReadyCallback {
 						search_result = msg.obj.toString().split("\n");
 						for(String tem:search_result)
 						{
-							setUsrsLocate(tem.split(":")[0] , Double.parseDouble(tem.split(":")[1]) , Double.parseDouble(tem.split(":")[2]));
+							new userMarker().setUsrsLocate(tem.split(":")[0] , Double.parseDouble(tem.split(":")[1]) , Double.parseDouble(tem.split(":")[2]));
 						}
 						Toast.makeText(getApplicationContext(),"get search result!!", Toast.LENGTH_SHORT).show();
 						break;
@@ -204,14 +207,28 @@ OnMapReadyCallback {
 		     SendToServer.GET_AROUND_USER).start();	
 		}
 		
-		public void setUsrsLocate(String usr_name , double lat , double lng) {
+		public class userMarker implements OnMarkerClickListener {
 			
-			Marker newMarker;
+			public void setUsrsLocate(String usr_name , double lat , double lng) {
+				
+				MarkerOptions markerOpt = new MarkerOptions().title(usr_name); // 再加上新的marker
+		    	markerOpt.position(new LatLng(lat,lng));
+		    	newMarker = polarMap.addMarker(markerOpt);
+		    	polarMap.setOnMarkerClickListener(this);
+			}
 			
-			MarkerOptions markerOpt = new MarkerOptions().title(usr_name); // 再加上新的marker
-	    	markerOpt.position(new LatLng(lat,lng));
-	    	newMarker = polarMap.addMarker(markerOpt);
+			@Override
+		    public boolean onMarkerClick(Marker marker) {
+				
+				if(marker.equals(newMarker)) {
+
+					Toast.makeText(getApplicationContext(), marker.getTitle() , Toast.LENGTH_SHORT).show();
+					return true;
+				}
+		        return false;
+		    }
 		}
+		
 		 
 		@Override
 	    public void onConnectionSuspended(int cause) {

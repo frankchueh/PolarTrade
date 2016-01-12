@@ -173,7 +173,7 @@ public class ProductInfo extends ActionBarActivity {
 				bu.putString("name", productName);					// 新名字
 				bu.putInt("price", productPrice); 					// 新價格
 				bu.putByteArray("info",productInfo.getBytes());		// 新商品資訊
-				bu.putString("photo",orgUri.toString());   // 商品圖片超連結
+				//bu.putString("photo",orgUri.toString());   // 商品圖片超連結
 				
 				it.putExtras(bu);
 				it.setClass(ProductInfo.this, ProductEdit.class);
