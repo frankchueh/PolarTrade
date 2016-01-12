@@ -163,17 +163,24 @@
             </LinearLayout>
         </ScrollView>
     </LinearLayout>
-
-    <Button
-        android:id="@+id/btnUIMComfirm"
+    
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="確定" />
+        android:orientation="horizontal" >
 
-    <Button
-        android:id="@+id/btnUIMBack"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="取消" />
+	    <Button
+	        android:id="@+id/btnUIMComfirm"
+	        android:layout_width="180dp"
+	        android:layout_height="wrap_content"
+	        android:text="確定" />
+
+	    <Button
+	        android:id="@+id/btnUIMBack"
+	        android:layout_width="180dp"
+	        android:layout_height="wrap_content"
+	        android:text="取消" />
+    
+    </LinearLayout>
 
 </LinearLayout>

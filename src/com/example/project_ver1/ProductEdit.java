@@ -75,7 +75,7 @@ public class ProductEdit extends ActionBarActivity {
 		pinfo = new String(bu.getByteArray("info"),Charset.forName("UTF-8"));
 		editProductInfo.setText(pinfo);
 		
-		try {		// 根據 uri 去讀取內部儲存讀出照片資料 並顯示出來
+		/*try {		// 根據 uri 去讀取內部儲存讀出照片資料 並顯示出來
 		orgUri = Uri.parse(bu.getString("photo"));
 		ContentResolver contentResolver = getContentResolver();
 		mContent = readStream(contentResolver.openInputStream(orgUri));
@@ -84,7 +84,7 @@ public class ProductEdit extends ActionBarActivity {
 		productImage.setImageBitmap(bm);
 		} catch(Exception e) {
 				e.printStackTrace();
-		}
+		}*/
 
 		MessageHandler = new Handler() {
 
@@ -123,14 +123,31 @@ public class ProductEdit extends ActionBarActivity {
 					finish();
 					break;
 					
+				case SendToServer.SUCCESS_GET_PHOTO:
+					mContent = (byte[]) msg.obj;
+					Bitmap bmp = BitmapFactory.decodeByteArray(mContent, 0,
+							mContent.length, null);
+					productImage.setImageBitmap(bmp);
+					break;
+					
 				case SendToServer.FAIL:
 					
 					Toast.makeText(getApplicationContext(),"Product update failed", Toast.LENGTH_SHORT).show();
+					break;
+					
+				case SendToServer.SERVER_ERROR:
+					Toast.makeText(getApplicationContext(),
+							"Server not response", Toast.LENGTH_SHORT).show();
+					break;
 				}
 				super.handleMessage(msg);
 			}
 		};
 		
+		String msg_getphoto = "GetPhoto" + "\n" +
+				  "C:/DataBase/product/"+ pid +"/" + "photo.jpg";
+		new SendToServer(SendToServer.PhotoPort, msg_getphoto,
+				MessageHandler, SendToServer.GET_PHOTO).start(); // 傳到server並抓取圖片
 	}
 
 	
