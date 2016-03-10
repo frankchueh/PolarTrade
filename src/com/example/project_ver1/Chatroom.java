@@ -48,7 +48,7 @@ public class Chatroom extends ActionBarActivity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				String sendMsg = editChatMsg.getText().toString();
-				
+
 				if (!sendMsg.equals("")) {
 					editChatMsg.setText(""); // ²MªÅ¿é¤J®Ø
 
@@ -116,8 +116,8 @@ public class Chatroom extends ActionBarActivity {
 
 		if (chatID != -1) {
 			workHandler.post(DownloadMsg);
-			Toast.makeText(getApplicationContext(), "OnResume",
-					Toast.LENGTH_SHORT).show();
+//			Toast.makeText(getApplicationContext(), "OnResume",
+//					Toast.LENGTH_SHORT).show();
 		} else {
 			int PID = call_it.getIntExtra("produceID", -1);
 			int SID = call_it.getIntExtra("sellerID", -1);
@@ -139,8 +139,8 @@ public class Chatroom extends ActionBarActivity {
 		workHandler.removeCallbacks(DownloadMsg);
 		workHandler = null;
 		super.onDestroy();
-		Toast.makeText(getApplicationContext(), "OnDestory", Toast.LENGTH_SHORT)
-				.show();
+//		Toast.makeText(getApplicationContext(), "OnDestory", Toast.LENGTH_SHORT)
+//				.show();
 	}
 
 	@Override
@@ -148,7 +148,7 @@ public class Chatroom extends ActionBarActivity {
 		// TODO Auto-generated method stub
 		workHandler.removeCallbacks(DownloadMsg);
 		super.onPause();
-		Toast.makeText(getApplicationContext(), "OnPause", Toast.LENGTH_SHORT)
-				.show();
+//		Toast.makeText(getApplicationContext(), "OnPause", Toast.LENGTH_SHORT)
+//				.show();
 	}
 }
