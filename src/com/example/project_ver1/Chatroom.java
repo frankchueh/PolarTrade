@@ -46,7 +46,7 @@ public class Chatroom extends ActionBarActivity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				String sendMsg = editChatMsg.getText().toString();
-				
+
 				if (!sendMsg.equals("")) {
 					editChatMsg.setText(""); // ²MªÅ¿é¤J®Ø
 

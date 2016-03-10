@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.example.project_ver1.SearchProduct.LoadImageThread;
 import com.example.project_ver1.SearchProduct.ProductAdapter;
@@ -59,6 +60,9 @@ public class ChatRoomList extends ActionBarActivity {
 	String SchatID_with_comma = "";
 	String chatID_with_comma = "";
 	String[] all_chatID;
+	
+	int last_request;
+	String last_command;
 	
 	ChatListAdapter appAdapter;
 	public HashMap<Integer, Bitmap> productMap = new HashMap<Integer, Bitmap>();
@@ -123,6 +127,9 @@ public class ChatRoomList extends ActionBarActivity {
 						new SendToServer(SendToServer.MessagePort, command,
 								MessageHandler, SendToServer.GET_PRODUCT)
 								.start();
+						
+						last_request = SendToServer.GET_PRODUCT;
+						last_command = command;
 					}
 					if (!SchatID_with_comma.equals(" ")) {
 						chatID_S = SchatID_with_comma.split(",");
@@ -133,6 +140,9 @@ public class ChatRoomList extends ActionBarActivity {
 							new SendToServer(SendToServer.MessagePort, command,
 									MessageHandler, SendToServer.GET_PRODUCT)
 									.start();
+							
+							last_request = SendToServer.GET_PRODUCT;
+							last_command = command;
 						}
 					}
 					workHandler.post(checkMessageState);
@@ -164,8 +174,11 @@ public class ChatRoomList extends ActionBarActivity {
 						String[] chatID = chatID_with_comma.split(",");
 						for(int index = 0; index < chatID.length; index++)
 						{
-							message_state.put(Integer.parseInt(chatID[index])
-									, tem_message_state[index]);
+							if (StringUtils.isNumeric(chatID[index]))
+							{
+								message_state.put(Integer.parseInt(chatID[index])
+										, tem_message_state[index]);
+							}
 						}
 						if (appAdapter != null)
 							appAdapter.notifyDataSetChanged();
@@ -178,6 +191,7 @@ public class ChatRoomList extends ActionBarActivity {
 				case SendToServer.SERVER_ERROR:
 					Toast.makeText(getApplicationContext(), "Server Error",
 							Toast.LENGTH_SHORT).show();
+					workHandler.postDelayed(retry, 1000);
 					break;
 				}
 				super.handleMessage(msg);
@@ -185,7 +199,19 @@ public class ChatRoomList extends ActionBarActivity {
 		};
 
 	}
+	
+	Runnable retry = new Runnable(){
 
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			new SendToServer(SendToServer.MessagePort, last_command,
+					MessageHandler, last_request)
+					.start();
+		}
+		
+	};
+	
 	Runnable checkMessageState = new Runnable() {
 		@Override
 		public void run() {
