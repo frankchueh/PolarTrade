@@ -112,8 +112,8 @@ public class ChatRoomList extends ActionBarActivity {
 				switch (msg.what) {
 				
 				case SendToServer.SUCCESS_GET_CHAT_LIST:
-					Toast.makeText(getApplicationContext(), msg.obj.toString(),
-							Toast.LENGTH_SHORT).show();
+//					Toast.makeText(getApplicationContext(), msg.obj.toString(),
+//							Toast.LENGTH_SHORT).show();
 					BchatID_with_comma = msg.obj.toString().split("\n")[0];
 					SchatID_with_comma = msg.obj.toString().split("\n")[1];
 					chatID_with_comma = BchatID_with_comma + SchatID_with_comma;
@@ -185,8 +185,8 @@ public class ChatRoomList extends ActionBarActivity {
 					}
 					break;
 				case SendToServer.FAIL:
-					Toast.makeText(getApplicationContext(), msg.obj.toString(),
-							Toast.LENGTH_SHORT).show();
+//					Toast.makeText(getApplicationContext(), msg.obj.toString(),
+//							Toast.LENGTH_SHORT).show();
 					break;
 				case SendToServer.SERVER_ERROR:
 					Toast.makeText(getApplicationContext(), "Server Error",
