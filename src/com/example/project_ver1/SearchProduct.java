@@ -18,6 +18,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.util.DisplayMetrics;
@@ -35,7 +36,8 @@ public class SearchProduct extends ActionBarActivity {
 	Button btnSearch;
 
 	private File mpPhoto;
-	private File ProductPhotoDir = new File(Environment.getExternalStorageDirectory() + "/DCIM/ProductPhoto");
+	private File ProductPhotoDir = new File(
+			Environment.getExternalStorageDirectory() + "/DCIM/ProductPhoto");
 
 	ArrayList<Product> product_set = new ArrayList<Product>();
 	ArrayList<File> photo_set = new ArrayList<File>();
@@ -48,6 +50,12 @@ public class SearchProduct extends ActionBarActivity {
 	String command;
 	public HashMap<Integer, Bitmap> productMap = new HashMap<Integer, Bitmap>();
 
+	int last_request; // Use to retry when server error.
+	String last_command;
+	HandlerThread GetHandler;
+	Handler RetryHandler;
+	int RetryTime = 1500;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -55,43 +63,73 @@ public class SearchProduct extends ActionBarActivity {
 		resultView = (ListView) findViewById(R.id.resultListView);
 		btnSearch = (Button) findViewById(R.id.btnSearch);
 		spinner = (ProgressBar) findViewById(R.id.searchingSpinner);
-
+		
+		GetHandler = new HandlerThread("Retry");
+		GetHandler.start();
+		RetryHandler = new Handler(GetHandler.getLooper());
+		
 		MessageHandler = new Handler() {
 			public void handleMessage(Message msg) {
 				switch (msg.what) {
 				case SendToServer.GET_LOCATE_SUCCESS:
 					position = (double[]) msg.obj;
-					command = "searchProduct\n" + position[0] + "\n" + position[1] + "\n" + mainActivity.Account;
-					new SendToServer(SendToServer.MessagePort, command, MessageHandler, SendToServer.SEARCH_PRODUCT)
+//					Toast.makeText(getApplicationContext(),
+//							"Get Location Success!", Toast.LENGTH_SHORT).show();
+					command = "searchProduct\n" + position[0] + "\n"
+							+ position[1] + "\n" + mainActivity.Account;
+					new SendToServer(SendToServer.MessagePort, command,
+							MessageHandler, SendToServer.SEARCH_PRODUCT)
 							.start();
+					
+					last_request = SendToServer.SEARCH_PRODUCT;
+					last_command = command;
+					
 					break;
+					
 				case SendToServer.GET_LOCATE_FAIL:
-					Toast.makeText(getApplicationContext(), "Get Location fail", Toast.LENGTH_SHORT).show();
+//					Toast.makeText(getApplicationContext(),
+//							"Get Location fail", Toast.LENGTH_SHORT).show();
 					break;
 				case SendToServer.GET_SEARCH_RESULT:
+//					Toast.makeText(getApplicationContext(),
+//							"Get Search Result!:" + msg.obj.toString(),
+//							Toast.LENGTH_SHORT).show();
 					String[] result = msg.obj.toString().split("\n");
 					String pid = "";
 					for (String tem : result) {
 						pid += tem.split(":")[1];
 					}
 					command = "getCompressProduct\n" + pid + "\n";
-					new SendToServer(SendToServer.MessagePort, command, MessageHandler, SendToServer.GET_PRODUCT)
-							.start();
+					new SendToServer(SendToServer.MessagePort, command,
+							MessageHandler, SendToServer.GET_PRODUCT).start();
+					
+					last_request = SendToServer.GET_PRODUCT;
+					last_command = command;
+					
 					break;
 				case SendToServer.NO_SEARCH_RESULT:
 					spinner.setVisibility(View.GONE);
 					btnSearch.setVisibility(View.VISIBLE);
-					Toast.makeText(getApplicationContext(), "No Result", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(), "No Result",
+							Toast.LENGTH_SHORT).show();
 					break;
 				case SendToServer.SUCCESS:
-					product_set = (ArrayList<Product>) SerializationUtils.deserialize((byte[]) msg.obj);
+					product_set = (ArrayList<Product>) SerializationUtils
+							.deserialize((byte[]) msg.obj);
 					spinner.setVisibility(View.GONE);
 					btnSearch.setVisibility(View.VISIBLE);
 					setListView();
-					Toast.makeText(getApplicationContext(), "Get Product Success", Toast.LENGTH_SHORT).show();
+//					Toast.makeText(getApplicationContext(),
+//							"Get Product Success", Toast.LENGTH_SHORT).show();
 					break;
 				case SendToServer.FAIL:
-					Toast.makeText(getApplicationContext(), "Search product failed", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(),
+							"Search product failed", Toast.LENGTH_SHORT).show();
+					break;
+				case SendToServer.SERVER_ERROR:
+//					Toast.makeText(getApplicationContext(), "Retry",
+//							Toast.LENGTH_SHORT).show();
+					RetryHandler.postDelayed(retryRequest, RetryTime);
 					break;
 				}
 				super.handleMessage(msg);
@@ -108,14 +146,26 @@ public class SearchProduct extends ActionBarActivity {
 				}
 				String command = "getLocate\n" + mainActivity.Account;
 				spinner.setVisibility(View.VISIBLE);
-				new SendToServer(SendToServer.MessagePort, command, MessageHandler, SendToServer.GET_LOCATE).start();
+				new SendToServer(SendToServer.MessagePort, command,
+						MessageHandler, SendToServer.GET_LOCATE).start();
 				btnSearch.setVisibility(View.GONE);
 			}
 		});
 
 		spinner.setVisibility(View.GONE);
 	}
-
+	
+	Runnable retryRequest = new Runnable()
+	{
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			new SendToServer(SendToServer.MessagePort, last_command,
+					MessageHandler, last_request).start();
+		}
+		
+	};
+	
 	protected void setListView() {
 
 		productAdapter = new ProductAdapter(this);
@@ -123,11 +173,13 @@ public class SearchProduct extends ActionBarActivity {
 		resultView.setOnItemClickListener(new ListView.OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
 				File pfile = null;
 				Intent it = new Intent();
 				Bundle bu = new Bundle();
-				Bitmap bm = BitmapFactory.decodeByteArray(product_set.get(position).productPhoto, 0,
+				Bitmap bm = BitmapFactory.decodeByteArray(
+						product_set.get(position).productPhoto, 0,
 						product_set.get(position).productPhoto.length, null);
 				try {
 					pfile = savePhoto(bm, product_set.get(position).productID);
@@ -174,7 +226,8 @@ public class SearchProduct extends ActionBarActivity {
 			Bitmap bm = null;
 			if (productMap.get(load_P.productID) == null) {
 				byte[] pPhoto = load_P.productPhoto;
-				bm = BitmapFactory.decodeByteArray(pPhoto, 0, pPhoto.length, null);
+				bm = BitmapFactory.decodeByteArray(pPhoto, 0, pPhoto.length,
+						null);
 				productMap.put(load_P.productID, bm);
 				// Log.d("firstLoadView", load_P.productName);
 			} else {
@@ -226,10 +279,14 @@ public class SearchProduct extends ActionBarActivity {
 
 			if (convertView == null) {
 				pViewHolder = new ViewHolder();
-				convertView = myInflater.inflate(R.layout.search_result, parent, false);
-				pViewHolder.productPhoto = (ImageView) convertView.findViewById(R.id.productPhoto);
-				pViewHolder.productName = (TextView) convertView.findViewById(R.id.productName);
-				pViewHolder.productPrice = (TextView) convertView.findViewById(R.id.productPrice);
+				convertView = myInflater.inflate(R.layout.search_result,
+						parent, false);
+				pViewHolder.productPhoto = (ImageView) convertView
+						.findViewById(R.id.productPhoto);
+				pViewHolder.productName = (TextView) convertView
+						.findViewById(R.id.productName);
+				pViewHolder.productPrice = (TextView) convertView
+						.findViewById(R.id.productPrice);
 
 				DisplayMetrics dm = new DisplayMetrics();
 				getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -239,9 +296,12 @@ public class SearchProduct extends ActionBarActivity {
 			}
 			// fill data
 
-			pViewHolder.productName.setText(product_set.get(position).productName);
-			pViewHolder.productPrice.setText(String.valueOf(product_set.get(position).productPrice));
-			new LoadImageThread(pViewHolder.productPhoto).execute(product_set.get(position));
+			pViewHolder.productName
+					.setText(product_set.get(position).productName);
+			pViewHolder.productPrice.setText(String.valueOf(product_set
+					.get(position).productPrice));
+			new LoadImageThread(pViewHolder.productPhoto).execute(product_set
+					.get(position));
 			return convertView;
 		}
 	}
