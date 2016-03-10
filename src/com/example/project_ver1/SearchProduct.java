@@ -204,7 +204,6 @@ public class SearchProduct extends ActionBarActivity {
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
-
 			return product_set.size();
 		}
 
@@ -260,7 +259,6 @@ public class SearchProduct extends ActionBarActivity {
 			e.printStackTrace();
 		}
 		fos.close();
-
 		return mpPhoto;
 	}
 
