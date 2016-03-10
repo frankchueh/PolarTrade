@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.graphics.Typeface;
 
 public class Chatroom extends ActionBarActivity {
 
@@ -31,11 +32,12 @@ public class Chatroom extends ActionBarActivity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.chatroom);
-
+		
 		btnChatSend = (Button) this.findViewById(R.id.btnChatSend);
 		editChatMsg = (EditText) this.findViewById(R.id.editChatMsg);
 		txtChatData = (TextView) this.findViewById(R.id.txtChatData);
-
+		txtChatData.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/wt040.ttf"));
+		
 		GetHandler = new HandlerThread("getmsg");
 		GetHandler.start();
 		workHandler = new Handler(GetHandler.getLooper());
