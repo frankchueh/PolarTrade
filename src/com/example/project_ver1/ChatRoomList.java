@@ -167,6 +167,8 @@ public class ChatRoomList extends ActionBarActivity {
 							message_state.put(Integer.parseInt(chatID[index])
 									, tem_message_state[index]);
 						}
+						if (appAdapter != null)
+							appAdapter.notifyDataSetChanged();
 					}
 					break;
 				case SendToServer.FAIL:
@@ -285,20 +287,18 @@ public class ChatRoomList extends ActionBarActivity {
 						.findViewById(R.id.imgChatList);
 				pViewHolder.productName = (TextView) convertView
 						.findViewById(R.id.txtChatList1);
-
 				DisplayMetrics dm = new DisplayMetrics();
 				getWindowManager().getDefaultDisplay().getMetrics(dm);
 				convertView.setTag(pViewHolder);
 			} else {
 				pViewHolder = (ViewHolder) convertView.getTag();
 			}
-			int chatID = Integer.parseInt(all_chatID[position]);
+			int chatID = Integer.parseInt(chatID_current[position]);
 			
 			if(message_state.get(chatID).equals("1"))
 				pViewHolder.newMessage.setVisibility(View.VISIBLE);
 			else
 				pViewHolder.newMessage.setVisibility(View.INVISIBLE);
-			
 			pViewHolder.productName
 					.setText(product_current.get(position).productName);
 			new LoadImageThread(pViewHolder.productPhoto)
@@ -331,13 +331,11 @@ public class ChatRoomList extends ActionBarActivity {
 				// Log.d("secondLoadView", load_P.productName);
 				bm = productMap.get(load_P.productID);
 			}
-
 			return bm;
 		}
 
 		@Override
 		protected void onPostExecute(Bitmap result) {
-
 			super.onPostExecute(result);
 			img.setImageBitmap(result);
 		}

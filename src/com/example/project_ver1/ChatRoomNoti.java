@@ -59,17 +59,17 @@ public class ChatRoomNoti extends Service{
 			public void handleMessage(Message msg) {
 				switch (msg.what) {
 				case SendToServer.GET_NEW_MESSAGE:
-					Toast.makeText(getApplicationContext(), "New Message", Toast.LENGTH_SHORT).show();
+//					Toast.makeText(getApplicationContext(), "New Message", Toast.LENGTH_SHORT).show();
 					notificationManager.notify(notifyID, notification); // µo°e³qª¾
 					break;
 				
 				case SendToServer.NO_MESSAGE:	
-					Toast.makeText(getApplicationContext(), "No Message", Toast.LENGTH_SHORT).show();
+//					Toast.makeText(getApplicationContext(), "No Message", Toast.LENGTH_SHORT).show();
 					break;
 					
 				case SendToServer.SERVER_ERROR:
-					Toast.makeText(getApplicationContext(), "Server Error",
-							Toast.LENGTH_SHORT).show();
+//					Toast.makeText(getApplicationContext(), "Server Error",
+//							Toast.LENGTH_SHORT).show();
 					break;
 				}
 				super.handleMessage(msg);

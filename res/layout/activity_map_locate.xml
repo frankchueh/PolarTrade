@@ -27,6 +27,7 @@
             android:id="@+id/refreshButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/SkyBlue"
             android:onClick="getUserAround"
             android:text="@string/refresh_string" />
 
